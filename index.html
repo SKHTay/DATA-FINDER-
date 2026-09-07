@@ -1,0 +1,1293 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moteur unifié de recensement et de qualification des gisements</title>
+<style>
+:root{
+  --creme:#F5F0E8; --papier:#FFFDF9; --encre:#1E222B; --gris:#6C7080; --trait:#DCD5C8;
+  --violet:#5C3EC2; --lime:#B8E04A; --teal:#4EC9B0;
+  --violet-pale:#EDE8FB; --lime-pale:#F1F8DC; --teal-pale:#E2F6F1;
+  --r:3px;
+  --f:"Inter","Söhne",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--creme);color:var(--encre);font-family:var(--f);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.num{font-variant-numeric:tabular-nums}
+h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.01em}
+h1{font-size:27px;line-height:1.2}
+h2{font-size:21px;line-height:1.25}
+h3{font-size:17px}
+h4{font-size:15px}
+p{margin:0 0 12px}
+a{color:var(--violet)}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+small{font-size:13px;color:var(--gris)}
+
+/* ------- ossature ------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+header.top{border-bottom:1px solid var(--trait);background:var(--papier)}
+.top-in{max-width:1180px;margin:0 auto;padding:18px 24px 0;display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between}
+.marque{font-weight:600}
+.marque span{color:var(--gris);font-weight:400}
+.ver{font-size:13px;color:var(--gris)}
+nav.spine{max-width:1180px;margin:0 auto;padding:14px 24px 0;display:flex;gap:0;overflow-x:auto}
+nav.spine button{
+  border:0;background:none;padding:8px 16px 12px;color:var(--gris);white-space:nowrap;
+  border-bottom:2px solid transparent;font-size:14px}
+nav.spine button:hover{color:var(--encre)}
+nav.spine button[aria-current="true"]{color:var(--encre);border-bottom-color:var(--violet);font-weight:500}
+nav.spine .sep{align-self:center;color:var(--trait);padding:0 2px 4px}
+
+.bandeau{background:var(--violet-pale);border-bottom:1px solid var(--trait);font-size:13px}
+.bandeau div{max-width:1180px;margin:0 auto;padding:8px 24px;color:#3E2C86}
+
+.titre{padding:36px 0 8px;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:flex-end}
+.chapeau{max-width:70ch;color:var(--gris);margin-bottom:24px}
+
+/* ------- surfaces ------- */
+.carte{background:var(--papier);border:1px solid var(--trait);border-radius:var(--r);padding:20px}
+.grille{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
+.kpi{background:var(--papier);border:1px solid var(--trait);border-radius:var(--r);padding:14px 16px}
+.kpi .v{font-size:27px;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:13px;color:var(--gris);margin-top:2px}
+.kpi .d{font-size:12px;color:var(--gris);margin-top:6px;font-variant-numeric:tabular-nums}
+.kpi.na .v{color:var(--trait)}
+
+/* ------- tableaux ------- */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-weight:500;color:var(--gris);font-size:13px;padding:8px 10px;border-bottom:1px solid var(--trait);vertical-align:bottom}
+td{padding:9px 10px;border-bottom:1px solid #EFE9DE;vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.scroll{overflow-x:auto}
+
+/* ------- pastilles ------- */
+.p{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;line-height:1.5;border:1px solid transparent;white-space:nowrap}
+.p-violet{background:var(--violet-pale);color:#3E2C86;border-color:#D6CCF7}
+.p-lime{background:var(--lime-pale);color:#4A5C12;border-color:#DCEBA8}
+.p-teal{background:var(--teal-pale);color:#16584C;border-color:#BCE8DF}
+.p-gris{background:#F1ECE2;color:var(--gris);border-color:var(--trait)}
+.p-encre{background:var(--encre);color:var(--creme)}
+.p-hach{color:#3A3F4C;border-color:#C9C2B4;
+  background:repeating-linear-gradient(135deg,#F1ECE2,#F1ECE2 4px,#E2DACB 4px,#E2DACB 8px)}
+
+/* ------- contrôles ------- */
+.btn{border:1px solid var(--violet);background:var(--violet);color:#fff;padding:7px 14px;border-radius:var(--r);font-size:14px}
+.btn:hover{background:#4C31A8}
+.btn.sec{background:transparent;color:var(--violet)}
+.btn.sec:hover{background:var(--violet-pale)}
+.btn.mini{padding:3px 9px;font-size:13px}
+.btn.gris{border-color:var(--trait);color:var(--gris);background:transparent}
+.btn.gris:hover{background:#F1ECE2;color:var(--encre)}
+select,input[type=text],textarea{
+  font-family:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--trait);
+  border-radius:var(--r);background:var(--papier);color:var(--encre);width:100%}
+select:focus,input:focus,textarea:focus,button:focus-visible{outline:2px solid var(--violet);outline-offset:1px}
+label.champ{display:block;font-size:13px;color:var(--gris);margin-bottom:4px}
+.ligne{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+
+/* ------- divers ------- */
+.jauge{height:6px;background:#EDE7DB;border-radius:999px;overflow:hidden;margin-top:8px}
+.jauge i{display:block;height:100%;background:var(--violet)}
+.jauge.lime i{background:var(--lime)}
+.jauge.teal i{background:var(--teal)}
+.liste-nette{list-style:none;padding:0;margin:0}
+.liste-nette li{padding:8px 0;border-bottom:1px solid #EFE9DE;display:flex;gap:10px;justify-content:space-between;align-items:baseline}
+.liste-nette li:last-child{border-bottom:0}
+.encadre{border-left:3px solid var(--violet);background:var(--violet-pale);padding:12px 16px;border-radius:0 var(--r) var(--r) 0;font-size:14px}
+.encadre.att{border-left-color:var(--encre);background:#F1ECE2}
+.sect{margin-top:32px}
+.sect>h2{margin-bottom:4px}
+.sect>.sub{color:var(--gris);font-size:14px;margin-bottom:16px;max-width:74ch}
+.tag{font-size:12px;color:var(--gris);font-variant-numeric:tabular-nums}
+.mono-id{font-variant-numeric:tabular-nums;font-size:13px;color:var(--gris)}
+
+/* grille angles morts */
+.am{border-collapse:separate;border-spacing:2px;font-size:12px}
+.am th{padding:4px 6px;font-size:12px;border:0}
+.am td{padding:0;border:0}
+.am button{width:100%;min-width:74px;border:1px solid var(--trait);border-radius:2px;padding:6px 4px;font-size:11px;background:var(--papier);color:var(--gris)}
+.am .s-ID{background:var(--teal-pale);border-color:#BCE8DF;color:#16584C}
+.am .s-AB{background:var(--lime-pale);border-color:#DCEBA8;color:#4A5C12}
+.am .s-NA{background:#F1ECE2;color:var(--gris)}
+.am .s-NC{background:repeating-linear-gradient(135deg,#FFFDF9,#FFFDF9 4px,#EDE7DB 4px,#EDE7DB 8px);color:#3A3F4C}
+
+/* matrice L x A */
+.mat{border-collapse:collapse;font-size:13px;width:100%}
+.mat th{border:1px solid var(--trait);padding:6px 8px;background:#F1ECE2;text-align:center}
+.mat td{border:1px solid var(--trait);padding:8px;height:78px;vertical-align:top}
+.mat .puce{display:block;margin-bottom:4px;font-size:12px;padding:2px 6px;border-radius:2px}
+
+/* saisie qualif */
+.crit{border-bottom:1px solid #EFE9DE;padding:12px 0}
+.crit:last-child{border-bottom:0}
+.crit .hd{display:flex;gap:10px;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.crit .q{font-size:14px;color:var(--gris);max-width:78ch}
+.crit .ctl{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.crit .ctl>div{min-width:120px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{border:1px solid var(--trait);background:var(--papier);color:var(--gris);padding:5px 12px;border-radius:var(--r);font-size:14px}
+.tabs button[aria-current="true"]{background:var(--encre);color:var(--creme);border-color:var(--encre)}
+.audit{font-size:13px}
+.audit table{font-size:13px}
+.audit td:first-child{color:var(--gris);width:42%}
+footer{border-top:1px solid var(--trait);margin-top:48px;padding:20px 0;font-size:13px;color:var(--gris)}
+@media (max-width:640px){
+  .wrap{padding:0 16px 64px}.top-in,nav.spine{padding-left:16px;padding-right:16px}
+  h1{font-size:23px}.kpi .v{font-size:23px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="marque">Moteur unifié <span>de recensement et de qualification des gisements de données</span></div>
+    <div class="ver">Réf. V1.2.2, procédure EDR V1.0, MPD V1.1.5</div>
+  </div>
+  <nav class="spine" id="nav"></nav>
+</header>
+<div class="bandeau"><div id="bandeau"></div></div>
+<main class="wrap" id="app"></main>
+<footer class="wrap">
+  Ce prototype fonctionne hors ligne. Les données de démonstration sont fictives : aucun contenu patient, aucune donnée réelle d'établissement.
+  Les poids, seuils et formules reproduisent le référentiel V1.2.2 et la spécification fonctionnelle V1.2.2 ; ils restent des hypothèses à calibrer sur les pilotes.
+</footer>
+
+<script>
+/* ==========================================================================
+   1. POIDS, CATALOGUES, LIBELLÉS  (source : Référentiel V1.2.2)
+   ========================================================================== */
+const W = {
+  U : {U01:25,U02:20,U03:15,U04:15,U05:25},
+  Vc: {V07:15,V08:10,V09:10,V10:5},                 // consolidation
+  Vv: {V01:10,V02:10,V03:10,V04:10,V05:10,V06:10},  // voies, poids nominal K/Conf (convention MVP)
+  A : {A01:7,A02:8,A03:14,A04:10,A05:10,A06:10,A07:10,A08:8,A09:8,A10:7,A11:8},
+  C : {C01:15,C02:10,C03:10,C04:15,C05:10,C06:15,C07:10,C08:10,C09:5},
+  IA: {IA01:15,IA02:20,IA03:15,IA04:15,IA05:15,IA06:10,IA07:10}
+};
+const LIB = {
+  U01:"Correspondance avec la finalité",U02:"Adoption et couverture des bénéficiaires",
+  U03:"Fréquence et fiabilité d'usage",U04:"Profondeur informationnelle",U05:"Bénéfice effectivement obtenu",
+  V01:"Valeur clinique et sécurité",V02:"Valeur parcours et coordination",V03:"Valeur populationnelle et équité",
+  V04:"Valeur opérationnelle et économique",V05:"Valeur scientifique et évaluation",V06:"Valeur d'automatisation et d'IA",
+  V07:"Alignement stratégique et besoin",V08:"Portée, fréquence, bénéficiaires",V09:"Valeur patrimoniale",V10:"Mesurabilité du bénéfice",
+  A01:"Localisation et inventaire",A02:"Responsabilité et gouvernance",A03:"Accès et extractabilité",
+  A04:"Complétude et couverture",A05:"Exactitude et cohérence",A06:"Sémantique et métadonnées",
+  A07:"Standardisation et interopérabilité",A08:"Volumétrie et granularité",A09:"Représentativité et rapprochement",
+  A10:"Profondeur, continuité, fraîcheur",A11:"Effort, compétences, dépendances",
+  C01:"Finalité et base juridique",C02:"Minimisation, information, droits",C03:"Confidentialité et habilitations",
+  C04:"Sécurité, hébergement, sous-traitance",C05:"Identification et réidentification",C06:"Sécurité clinique",
+  C07:"Biais, équité, représentativité",C08:"Traçabilité et auditabilité",C09:"Qualification réglementaire",
+  IA01:"Problème, utilisateur, baseline",IA02:"Adéquation des données à la tâche",IA03:"Vérité terrain et évaluation",
+  IA04:"Volume, diversité, généralisation",IA05:"Évaluabilité et seuils",IA06:"Intégration et supervision humaine",
+  IA07:"Déploiement, surveillance, maintenance",
+  UG01:"Intensité d'utilisation",UG02:"Diversité des finalités",UG03:"Diversité des utilisateurs",
+  UG04:"Niveau d'exploitation informationnelle",UG05:"Couverture de la richesse disponible"
+};
+const QUESTION = {
+  U01:"Une pratique ou solution actuelle poursuit-elle déjà le même résultat que le scénario ?",
+  U02:"Quelle part des utilisateurs, sites ou décisions cibles bénéficie réellement de l'usage actuel ?",
+  U03:"L'usage actuel intervient-il au bon moment et de façon reproductible ?",
+  U04:"L'usage actuel mobilise-t-il les variables, documents, périodes et liens nécessaires ?",
+  U05:"Quelle part du résultat attendu est déjà obtenue et mesurée ?",
+  V01:"Quelle décision ou prise en charge serait améliorée ? Quel événement évitable réduit ?",
+  V02:"Le gisement permet-il de relier des étapes, métiers ou structures ?",
+  V03:"Permet-il d'identifier besoins, risques, perdus de vue ou inégalités ?",
+  V04:"Peut-il réduire délai, charge, coût, gaspillage ou variabilité ?",
+  V05:"Permet-il une cohorte, une évaluation, une étude ou une amélioration qualité ?",
+  V06:"Une tâche d'IA est-elle précisément définie et comparée à une solution non-IA ?",
+  V07:"Le scénario répond-il à une priorité institutionnelle ? Un sponsor est-il engagé ?",
+  V08:"Combien de personnes, décisions ou opérations sont concernées, à quelle fréquence ?",
+  V09:"L'information est-elle rare, longitudinale ou impossible à reconstituer ?",
+  V10:"Peut-on définir un état initial, une cible et un indicateur d'impact ?",
+  A01:"Les sources, environnements, tables et flux sont-ils localisés ?",
+  A02:"Un responsable métier et un responsable technique peuvent-ils décider et arbitrer ?",
+  A03:"Une extraction complète, sécurisée et reproductible est-elle possible ?",
+  A04:"Les variables et épisodes nécessaires sont-ils suffisamment renseignés ?",
+  A05:"Les valeurs sont-elles plausibles, cohérentes et dédupliquées ?",
+  A06:"Les champs, unités, codes et changements historiques sont-ils compris ?",
+  A07:"Les formats, terminologies et profils sont-ils adaptés aux échanges nécessaires ?",
+  A08:"Le nombre d'observations est-il suffisant au regard du cas d'usage et des sous-groupes ?",
+  A09:"La population utile est-elle couverte ? Les biais et identifiants de liaison sont-ils compris ?",
+  A10:"L'historique, la fréquence et le délai de mise à disposition correspondent-ils à l'usage ?",
+  A11:"Quel délai, coût, outillage et compétences jusqu'au premier usage ?",
+  C01:"La finalité, la base juridique et la condition autorisant le traitement sont-elles identifiées ?",
+  C02:"Minimisation, information des personnes, droits et durées sont-ils définis ?",
+  C03:"Le cercle des personnes autorisées est-il défini selon le besoin d'en connaître ?",
+  C04:"Environnements, transferts, sauvegardes, incidents et prestataires sont-ils maîtrisés ?",
+  C05:"Le niveau d'identification est-il nécessaire ? Le risque de réidentification est-il évalué ?",
+  C06:"Que se passe-t-il en cas d'erreur ? Une supervision humaine et un repli existent-ils ?",
+  C07:"Quels groupes peuvent être sous-représentés ? Les erreurs seront-elles comparées par sous-groupe ?",
+  C08:"Qui répond du scénario, des transformations et des résultats ? Tout est-il traçable ?",
+  C09:"Le scénario relève-t-il d'une recherche, d'un entrepôt, d'un DM ou d'un système d'IA réglementé ?",
+  IA01:"La tâche est-elle bornée ? Quel processus actuel et quelle performance de référence ?",
+  IA02:"Modalités, variables, granularité et temporalité correspondent-elles à la sortie attendue ?",
+  IA03:"Dispose-t-on d'une référence fiable ou d'experts pour l'annotation ?",
+  IA04:"Les sites, périodes, situations et sous-groupes utiles sont-ils représentés ?",
+  IA05:"Quelles métriques et quels faux positifs ou négatifs acceptables ?",
+  IA06:"Où la sortie apparaît-elle ? Qui peut la vérifier, la contester ou l'ignorer ?",
+  IA07:"Les dérives, versions, incidents, coûts et réentraînements peuvent-ils être suivis ?"
+};
+const FAMILLES = ["Clinique structurée","Textes libres et comptes rendus","Documents et GED","Imagerie et signaux",
+  "Biologie et pharmacie","Parcours et flux","Fonctionnelle et médico-sociale","Pilotage et RH",
+  "Expérience patient, PROMs","Qualité et événements indésirables","Recherche, cohortes, registres",
+  "Fichiers locaux et tableurs","Anciens systèmes et archives","Données détenues par un éditeur"];
+const FAM_CRIT = new Set(["Textes libres et comptes rendus","Qualité et événements indésirables",
+  "Fichiers locaux et tableurs","Expérience patient, PROMs"]);
+const CELL_ETATS = ["NC","ID","AB","NA"];
+const CELL_LIB = {NC:"Non vérifiée",ID:"Identifiée",AB:"Absente",NA:"Non applicable"};
+
+/* ==========================================================================
+   2. ÉTAT, jeu de démonstration fictif
+   ========================================================================== */
+const a  = (v,e)=>({v,e});                       // réponse simple
+const au = (v,e,d,o)=>({v,e,d,o});               // réponse U : valeur validée, déclarée, objectivée
+const c  = (m,e,I,P)=>({v:m,e,I,P});             // contrôle C : maturité + impact + exposition
+
+let S = {
+  view:"edr", tabQ:"U", scenarioCourant:"SCN-0001", gisementCourant:"GIS-0001",
+  campagne:{
+    id:"CMP-0001", nom:"Exploration des gisements, établissement pilote H1",
+    perimetre:"Urgences, médecine interne, qualité et gestion des risques, DIM",
+    pilote:"Direction de la donnée", debut:"2026-09-14", passe:2, contreExploration:true,
+    exclusions:"Sauvegardes techniques, périmètre pédiatrie",
+    unites:[
+      {id:"ZON-01",nom:"Urgences",prio:true,etat:"EXPLOREE"},
+      {id:"ZON-02",nom:"Médecine interne",prio:true,etat:"EXPLOREE"},
+      {id:"ZON-03",nom:"Qualité et gestion des risques",prio:true,etat:"EXPLOREE"},
+      {id:"ZON-04",nom:"DIM",prio:true,etat:"PREVUE"},
+      {id:"ZON-05",nom:"Pharmacie à usage intérieur",prio:false,etat:"EXPLOREE"},
+      {id:"ZON-06",nom:"Ingénierie biomédicale",prio:false,etat:"EXCLUE"}
+    ],
+    systemes:[
+      {id:"SYS-01",nom:"DPI",etat:"EXAMINE"},{id:"SYS-02",nom:"PMSI / groupage",etat:"EXAMINE"},
+      {id:"SYS-03",nom:"SGL laboratoire",etat:"EXAMINE"},{id:"SYS-04",nom:"PACS",etat:"A_REVOIR"},
+      {id:"SYS-05",nom:"GED qualité",etat:"EXAMINE"},{id:"SYS-06",nom:"Entrepôt BI",etat:"EXAMINE"},
+      {id:"SYS-07",nom:"Base Access urgences",etat:"EXAMINE"},{id:"SYS-08",nom:"Serveur ECG",etat:"A_REVOIR"},
+      {id:"SYS-09",nom:"Gestion des lits",etat:"EXCLU"},{id:"SYS-10",nom:"Imagerie pédiatrique",etat:"HORS_PERIMETRE"}
+    ],
+    contributeurs:{sollicites:14,repondu:9,rolesAttendus:8,rolesCouverts:6},
+    passes:[{id:"PAS-1",nouveaux:5},{id:"PAS-2",nouveaux:1}],
+    cellules:{}  // rempli plus bas
+  },
+  signaux:[
+    {id:"SIG-0001",nom:"Comptes rendus d'hospitalisation",zone:"ZON-02",canal:"R4",auteur:"Cadre de santé",wf:"RESOLU",res:"CONFIRME",gis:"GIS-0001",motif:"Contenu riche en texte, peu analysé"},
+    {id:"SIG-0002",nom:"Lettres de liaison archivées",zone:"ZON-02",canal:"R1",auteur:"DSI",wf:"RESOLU",res:"FUSIONNE",gis:"GIS-0001",motif:"Historique important"},
+    {id:"SIG-0003",nom:"Registre des événements indésirables",zone:"ZON-03",canal:"R1",auteur:"Qualité",wf:"RESOLU",res:"CONFIRME",gis:"GIS-0002",motif:"Peu analysé de façon agrégée"},
+    {id:"SIG-0004",nom:"Fichier de suivi des passages non programmés",zone:"ZON-01",canal:"R5",auteur:"Secrétariat urgences",wf:"RESOLU",res:"CONFIRME",gis:"GIS-0003",motif:"Fichier local indispensable à l'équipe"},
+    {id:"SIG-0005",nom:"Extractions PMSI mensuelles",zone:"ZON-04",canal:"R1",auteur:"DIM",wf:"RESOLU",res:"CONFIRME",gis:"GIS-0004",motif:"Demande récurrente d'autres équipes"},
+    {id:"SIG-0006",nom:"Verbatim des questionnaires de sortie",zone:"ZON-03",canal:"R4",auteur:"Chargée de mission usagers",wf:"SOUMIS",res:null,gis:null,motif:"Usage potentiel inconnu"},
+    {id:"SIG-0007",nom:"Tableur de suivi des refus de transfert",zone:"ZON-01",canal:"R4",auteur:"Médecin urgentiste",wf:"SOUMIS",res:null,gis:null,motif:"Beaucoup de travail manuel"},
+    {id:"SIG-0008",nom:"Sauvegardes de l'ancien DPI",zone:"ZON-02",canal:"R2",auteur:"DSI",wf:"RESOLU",res:"ECARTE",gis:null,motif:"Hors périmètre de la campagne"},
+    {id:"SIG-0009",nom:"Comptes rendus opératoires numérisés",zone:"ZON-02",canal:"R5",auteur:"Secrétariat médical",wf:"EN_REVUE",res:null,gis:null,motif:"Donnée peu connue des autres services"}
+  ],
+  gisements:[
+    {id:"GIS-0001",nom:"Comptes rendus d'hospitalisation en médecine interne",famille:"Textes libres et comptes rendus",
+     definition:"Comptes rendus de sortie et lettres de liaison saisis dans le DPI. N'inclut pas les comptes rendus opératoires ni les documents scannés externes.",
+     sources:"DPI (module documents), GED archivage",producteur:"Médecins et internes, à la sortie du patient",
+     rmetier:"Chef de service de médecine interne",rtech:"Responsable applicatif DPI",
+     population:"Séjours de médecine interne, adultes",periode:"Depuis 2013, environ 4 200 documents par an",
+     modalites:"Texte libre, PDF",granularite:"Document / séjour",sensibilite:"Données de santé, directement identifiantes",
+     usageInitial:"Continuité des soins et transmission au médecin traitant",
+     contraintes:"Export texte limité par le contrat éditeur, extraction par lot non testée",
+     zone:"ZON-02",prealable:"NON",passe:"PAS-1",gouvernance:"IDENTIFIE",
+     ug:{UG01:a(3,2),UG02:a(1,2),UG03:a(2,1),UG04:a(1,2),UG05:a(1,1)},V09:3,V09preuve:2},
+    {id:"GIS-0002",nom:"Registre des événements indésirables associés aux soins",famille:"Qualité et événements indésirables",
+     definition:"Déclarations internes d'événements indésirables, analyse de causes et suites données. N'inclut pas les réclamations des usagers.",
+     sources:"GED qualité, base Access de la cellule qualité",producteur:"Tout professionnel déclarant",
+     rmetier:"Responsable qualité et gestion des risques",rtech:"Référent applicatif qualité",
+     population:"Événements déclarés sur l'ensemble de l'établissement",periode:"Depuis 2016, environ 900 déclarations par an",
+     modalites:"Semi-structuré, texte libre",granularite:"Déclaration",sensibilite:"Données de santé indirectes, données de professionnels",
+     usageInitial:"Traitement unitaire des déclarations et retour d'expérience",
+     contraintes:"Base Access non maintenue, pas de dictionnaire",
+     zone:"ZON-03",prealable:"OUI",passe:"PAS-1",gouvernance:"IDENTIFIE",
+     ug:{UG01:a(2,2),UG02:a(1,2),UG03:a(2,2),UG04:a(1,2),UG05:a(1,1)},V09:2,V09preuve:2},
+    {id:"GIS-0003",nom:"Fichier local des passages non programmés aux urgences",famille:"Fichiers locaux et tableurs",
+     definition:"Tableur tenu par le secrétariat des urgences recensant les passages non enregistrés dans le logiciel de flux, motifs et orientation.",
+     sources:"Tableur partagé sur le répertoire du service",producteur:"Secrétariat des urgences, saisie quotidienne",
+     rmetier:"Cadre des urgences",rtech:"Aucun responsable technique identifié",
+     population:"Passages non programmés",periode:"Depuis 2019, mise à jour quotidienne",
+     modalites:"Structuré léger",granularite:"Passage",sensibilite:"Données de santé, identifiants indirects",
+     usageInitial:"Suivi interne du service, préparation des staffs",
+     contraintes:"Fichier hors sauvegarde institutionnelle",
+     zone:"ZON-01",prealable:"NON",passe:"PAS-1",gouvernance:"A_IDENTIFIER",
+     ug:{UG01:a(3,1),UG02:a(1,1),UG03:a(1,1),UG04:a(1,1),UG05:a(2,1)},V09:2,V09preuve:1},
+    {id:"GIS-0004",nom:"Extractions PMSI et fichiers de pilotage d'activité",famille:"Pilotage et RH",
+     definition:"Résumés de sortie groupés et extractions mensuelles produites par le DIM pour le pilotage et la facturation.",
+     sources:"Logiciel de groupage, entrepôt BI",producteur:"DIM, à partir du codage des séjours",
+     rmetier:"Médecin DIM",rtech:"Administrateur BI",
+     population:"Ensemble des séjours MCO",periode:"Depuis 2010, production mensuelle",
+     modalites:"Structuré",granularite:"Séjour",sensibilite:"Données de santé pseudonymisables",
+     usageInitial:"Facturation, contrôle de gestion, rapports réglementaires",
+     contraintes:"Calendrier de production contraint, chaînage inter-séjours à confirmer",
+     zone:"ZON-04",prealable:"OUI",passe:"PAS-1",gouvernance:"IDENTIFIE",
+     ug:{UG01:a(4,3),UG02:a(2,2),UG03:a(3,2),UG04:a(2,2),UG05:a(2,2)},V09:2,V09preuve:2},
+    {id:"GIS-0005",nom:"Comptes rendus opératoires numérisés",famille:"Documents et GED",
+     definition:"Comptes rendus opératoires scannés avant bascule sur le DPI, conservés dans la GED.",
+     sources:"GED",producteur:"Secrétariat de bloc",rmetier:"À identifier",rtech:"Responsable GED",
+     population:"Séjours chirurgicaux de 2011 à 2017",periode:"2011 à 2017, gisement figé",
+     modalites:"Image, PDF non océrisé",granularite:"Document",sensibilite:"Données de santé, directement identifiantes",
+     usageInitial:"Archivage réglementaire",contraintes:"Aucun OCR, qualité de numérisation hétérogène",
+     zone:"ZON-02",prealable:"NON",passe:"PAS-2",gouvernance:"A_IDENTIFIER",
+     ug:{UG01:a(1,1),UG02:a(1,1),UG03:a(1,1),UG04:a(1,1),UG05:a(0,1)},V09:3,V09preuve:2}
+  ],
+  suggestions:[
+    {id:"SUG-0001",gis:"GIS-0005",titre:"Océrisation et recherche plein texte des comptes rendus opératoires de 2011 à 2017",
+     voie:"V05",hypotheses:"Le fonds est figé et complet ; l'OCR atteint une qualité suffisante sur des documents scannés hétérogènes.",
+     inconnues:"Qualité de numérisation, existence d'un index patient fiable, droit de réutilisation.",
+     baseline:"Recherche manuelle dans la GED par date et nom, plusieurs heures par demande."},
+    {id:"SUG-0002",gis:"GIS-0003",titre:"Mesure du volume réel de passages non programmés et de leur orientation",
+     voie:"V04",hypotheses:"Le tableur couvre la majorité des passages non enregistrés dans le logiciel de flux.",
+     inconnues:"Complétude de la saisie, doublons avec le logiciel de flux.",
+     baseline:"Comptage manuel trimestriel par le cadre du service."}
+  ],
+  preuveInventaire:2,   // E2 : l'inventaire des chantiers et des familles a été examiné et documenté
+  chantiers:[
+    {id:"WRK-01",titre:"Voie d'extraction sécurisée du DPI documentaire et dictionnaire minimal",
+     leve:["SCN-0001","SCN-0004"],preuve:2},
+    {id:"WRK-02",titre:"Reprise de la base Access qualité dans un socle maintenu",leve:["SCN-0003"],preuve:1}
+  ],
+  scenarios:[
+    { id:"SCN-0001", gis:"GIS-0001", stade:"QUALIFIE",
+      titre:"Recherche sémantique dans les comptes rendus pour la faisabilité de cohortes",
+      finalite:"Réduire le délai d'identification des patients éligibles à une étude",
+      beneficiaire:"Équipes de recherche clinique et médecins de médecine interne",
+      decision:"Décider d'ouvrir ou non une étude et dimensionner son recrutement",
+      resultat:"Liste de séjours candidats produite en moins d'une journée au lieu de plusieurs semaines",
+      population:"Séjours de médecine interne depuis 2013", horizon:"12 mois",
+      origine:"Validation humaine d'une suggestion", cIA:false,
+      profil:["PERSONNEL_SANTE","IDENTIFIANT","RECHERCHE"],
+      u:{U01:au(1,2,1,1),U02:au(0,2,0,0),U03:au(1,1,1,null),U04:au(1,2,2,1),U05:au(0,2,0,0)},
+      v:{V01:a(2,1),V02:a("ND",0),V03:a("ND",0),V04:a(2,2),V05:a(4,2),V06:a(3,2),
+         V07:a(3,2),V08:a(3,2),V09:a(3,2),V10:a(2,2)},
+      A:{A01:a(3,2),A02:a(3,2),A03:a(2,2),A04:a(2,2),A05:a(2,2),A06:a(2,2),A07:a(1,2),
+         A08:a(3,2),A09:a(2,2),A10:a(3,2),A11:a(2,1)},
+      c:{C01:c(2,2,3,3),C02:c(2,2,3,2),C03:c(3,2,4,2),C04:c(3,2,4,2),C05:c(2,2,3,3),
+         C06:c(2,2,2,1),C07:c(2,1,2,2),C08:c(2,2,3,2),C09:c(2,2,3,2)},
+      ia:{}
+    },
+    { id:"SCN-0002", gis:"GIS-0004", stade:"QUALIFIE",
+      titre:"Repérage des réhospitalisations non programmées à 30 jours",
+      finalite:"Identifier les services et profils de séjours à fort taux de réhospitalisation",
+      beneficiaire:"Direction qualité, chefs de pôle",
+      decision:"Cibler les actions d'amélioration de la préparation de la sortie",
+      resultat:"Tableau de bord trimestriel par service, avec suivi de l'écart",
+      population:"Séjours MCO adultes", horizon:"6 mois",
+      origine:"Formulé par la direction qualité", cIA:false,
+      profil:["PERSONNEL_SANTE","GRANDE_ECHELLE"],
+      u:{U01:au(1,2,2,1),U02:au(1,2,1,1),U03:au(1,2,1,1),U04:au(2,2,2,2),U05:au(1,2,1,1)},
+      v:{V01:a(3,2),V02:a(3,2),V03:a(2,2),V04:a(3,2),V05:a(2,2),V06:a(1,2),
+         V07:a(3,2),V08:a(3,2),V09:a(2,2),V10:a(3,3)},
+      A:{A01:a(4,3),A02:a(3,2),A03:a(3,3),A04:a(3,3),A05:a(3,3),A06:a(3,2),A07:a(3,2),
+         A08:a(4,3),A09:a(3,2),A10:a(3,2),A11:a(3,2)},
+      c:{C01:c(3,2,3,2),C02:c(3,2,2,2),C03:c(3,2,3,2),C04:c(3,3,3,2),C05:c(3,2,2,2),
+         C06:c(3,2,2,1),C07:c(3,2,2,2),C08:c(3,2,2,2),C09:c(3,2,2,1)},
+      ia:{}
+    },
+    { id:"SCN-0003", gis:"GIS-0002", stade:"QUALIFIE",
+      titre:"Thématisation automatique des déclarations d'événements indésirables",
+      finalite:"Faire émerger des familles de risques récurrentes non visibles au traitement unitaire",
+      beneficiaire:"Cellule qualité et commission des risques",
+      decision:"Choisir les thèmes prioritaires du programme d'amélioration",
+      resultat:"Regroupement thématique des déclarations, revu par la cellule qualité",
+      population:"Déclarations 2016 à 2026", horizon:"9 mois",
+      origine:"Validation humaine d'une suggestion", cIA:true,
+      profil:["PERSONNEL_SANTE"],
+      u:{U01:au(1,1,1,null),U02:au(1,1,1,null),U03:au("ND",0,null,null),U04:au(1,1,1,null),U05:au("ND",0,null,null)},
+      v:{V01:a(2,1),V02:a("ND",0),V03:a("ND",0),V04:a(2,1),V05:a(3,1),V06:a(3,1),
+         V07:a(2,1),V08:a(2,1),V09:a(2,1),V10:a("ND",0)},
+      A:{A01:a(2,1),A02:a(2,1),A03:a(1,1),A04:a("ND",0),A05:a("ND",0),A06:a(1,1),A07:a(1,1),
+         A08:a(2,1),A09:a("ND",0),A10:a(2,1),A11:a(2,1)},
+      c:{C01:c(2,1,3,2),C02:c(2,1,2,2),C03:c(2,1,3,2),C04:c(2,1,3,2),C05:c(2,1,3,2),
+         C06:c("ND",0,2,1),C07:c(1,1,2,2),C08:c(2,1,2,2),C09:c(1,1,2,1)},
+      ia:{IA01:a(2,1),IA02:a(2,1),IA03:a(1,1),IA04:a(2,1),IA05:a(1,1),IA06:a(2,1),IA07:a(1,1)}
+    },
+    { id:"SCN-0004", gis:"GIS-0001", stade:"QUALIFIE",
+      titre:"Alerte prédictive de décompensation à partir des comptes rendus",
+      finalite:"Signaler en temps réel un risque de dégradation clinique",
+      beneficiaire:"Équipe soignante de médecine interne",
+      decision:"Déclencher une réévaluation médicale anticipée",
+      resultat:"Alerte affichée dans le poste de soins",
+      population:"Patients hospitalisés en médecine interne", horizon:"18 mois",
+      origine:"Formulé par un praticien", cIA:true,
+      profil:["PERSONNEL_SANTE","IDENTIFIANT","INFLUENCE_SOIN","DECISION_AUTO"],
+      u:{U01:au(0,2,0,0),U02:au(0,2,0,0),U03:au(0,2,0,0),U04:au(0,2,0,0),U05:au(0,2,0,0)},
+      v:{V01:a(3,1),V02:a(2,1),V03:a("ND",0),V04:a(2,1),V05:a(2,1),V06:a(3,1),
+         V07:a(2,1),V08:a(3,1),V09:a(3,2),V10:a(2,1)},
+      A:{A01:a(3,2),A02:a(3,2),A03:a(2,2),A04:a(2,2),A05:a(2,2),A06:a(2,2),A07:a(1,1),
+         A08:a(3,2),A09:a(1,1),A10:a(2,2),A11:a(1,1)},
+      c:{C01:c(1,1,4,3),C02:c(1,1,3,3),C03:c(2,2,4,2),C04:c(2,2,4,2),C05:c(1,1,4,3),
+         C06:c(0,2,4,3),C07:c(1,1,3,3),C08:c(1,1,3,2),C09:c(0,1,3,2)},
+      ia:{IA01:a(2,1),IA02:a(1,1),IA03:a(1,1),IA04:a(1,1),IA05:a(1,1),IA06:a(1,1),IA07:a(0,1)}
+    },
+    { id:"SCN-0005", gis:"GIS-0003", stade:"QUALIFIE",
+      titre:"Quantification et redirection des passages non programmés évitables",
+      finalite:"Mesurer le volume réel de passages relevant de la ville et organiser leur redirection",
+      beneficiaire:"Cadre des urgences, coordination territoriale",
+      decision:"Dimensionner une filière de réorientation avec les MSP du territoire",
+      resultat:"Volume mensuel documenté et suivi du taux de réorientation",
+      population:"Passages non programmés depuis 2019", horizon:"4 mois",
+      origine:"Validation humaine d'une suggestion", cIA:false,
+      profil:["PERSONNEL_SANTE"],
+      u:{U01:au(1,2,1,1),U02:au(1,2,1,1),U03:au(2,2,2,2),U04:au(1,2,1,1),U05:au(1,2,1,1)},
+      v:{V01:a(1,2),V02:a(3,2),V03:a(3,2),V04:a(3,2),V05:a(2,2),V06:a(0,2),
+         V07:a(3,2),V08:a(2,2),V09:a(2,2),V10:a(3,2)},
+      A:{A01:a(3,2),A02:a(2,2),A03:a(4,3),A04:a(3,2),A05:a(2,2),A06:a(3,2),A07:a(2,2),
+         A08:a(3,2),A09:a(3,2),A10:a(4,3),A11:a(4,2)},
+      c:{C01:c(3,2,3,2),C02:c(3,2,2,2),C03:c(3,2,3,2),C04:c(3,2,3,2),C05:c(3,2,2,2),
+         C06:c(3,2,2,1),C07:c(3,2,2,2),C08:c(3,2,2,2),C09:c(3,2,2,1)},
+      ia:{}
+    }
+  ]
+};
+// grille d'angles morts : familles × 4 unités prioritaires
+(function seedCells(){
+  const zones=["ZON-01","ZON-02","ZON-03","ZON-04"];
+  const preseed={ "ZON-01":{0:"ID",1:"ID",5:"ID",11:"ID",9:"AB",3:"NA",12:"AB",13:"NC",8:"NC"},
+                  "ZON-02":{0:"ID",1:"ID",2:"ID",4:"ID",5:"ID",6:"AB",10:"AB",11:"ID",12:"ID",13:"NC",8:"NC",9:"AB",3:"NC",7:"AB"},
+                  "ZON-03":{1:"ID",2:"ID",9:"ID",8:"ID",11:"ID",10:"AB",0:"AB",3:"NA",4:"NA",5:"AB",6:"NA",7:"AB",12:"NC",13:"NC"},
+                  "ZON-04":{7:"ID",0:"AB",5:"NC",11:"NC",12:"NC",13:"NC"} };
+  zones.forEach(z=>{ FAMILLES.forEach((f,i)=>{ S.campagne.cellules[z+"|"+i]= (preseed[z]&&preseed[z][i])||"NC"; }); });
+})();
+
+/* ==========================================================================
+   3. MOTEUR DE CALCUL  (§3.4 à §10 du référentiel, §10 de la spécification)
+   ========================================================================== */
+const k_ = {0:1.00,1:0.80,2:0.60,3:0.40,4:0.20};
+const num = x => (typeof x === "number");
+
+function axe(rep, poids){
+  let wApp=0,wRen=0,som=0,confN=0;
+  for(const id in poids){
+    const r = rep[id]; if(!r) continue;
+    if(r.v==="NA") continue;                 // poids redistribué
+    wApp += poids[id];
+    if(r.v!=="ND"){ wRen+=poids[id]; som+=poids[id]*r.v; confN+=poids[id]*((r.e||0)/3); }
+  }
+  return {
+    obs: wRen? 25*som/wRen : 0,
+    pru: wApp? 25*som/wApp : 0,
+    K  : wApp? 100*wRen/wApp : null,
+    Conf:wApp? 100*confN/wApp : null,
+    wApp, wRen
+  };
+}
+const dec = (o,p,K,C) => (K===null||K<70||C===null||C<60) ? p : o;
+
+/* --- U : aucun plafond ne peut abaisser U (§3.6) --- */
+function calcU(sc){
+  const base = axe(sc.u, W.U);
+  let wApp=0,sH=0,contradictions=[];
+  for(const id in W.U){
+    const r=sc.u[id]; if(!r||r.v==="NA") continue; wApp+=W.U[id];
+    let m;
+    if(r.v==="ND") m=4;
+    else if(num(r.d)&&num(r.o)&&Math.abs(r.d-r.o)>=2){ m=Math.max(r.d,r.o); contradictions.push(id); }
+    else if(num(r.o)) m=r.o;
+    else if(num(r.d)) m=r.d;
+    else m=r.v;
+    sH+=W.U[id]*m;
+  }
+  const haut = wApp? 25*sH/wApp : 0;
+  return {...base, bas:base.pru, haut, contradictions,
+          dec: dec(base.obs,base.pru,base.K,base.Conf)};
+}
+
+/* --- V : deux meilleures voies + consolidation, plafond 69 (§6.3, §6.4) --- */
+function calcV(sc){
+  const voies=["V01","V02","V03","V04","V05","V06"];
+  const lObs=[], lPru=[]; let nVoies=0;
+  voies.forEach(id=>{ const r=sc.v[id]; if(!r||r.v==="NA") return;
+    if(r.v==="ND"){ lPru.push(0); } else { lObs.push(25*r.v); lPru.push(25*r.v); nVoies++; } });
+  const B = l => { const s=[...l].sort((x,y)=>y-x);
+    if(!s.length) return 0; if(s.length===1) return 0.70*s[0]; return 0.70*s[0]+0.30*s[1]; };
+  let wA=0,wR=0,sR=0;
+  for(const id in W.Vc){ const r=sc.v[id]; if(!r||r.v==="NA") continue; wA+=W.Vc[id];
+    if(r.v!=="ND"){ wR+=W.Vc[id]; sR+=W.Vc[id]*25*r.v; } }
+  let obs = 0.60*B(lObs) + 0.40*(wR? sR/wR : 0);
+  let pru = 0.60*B(lPru) + 0.40*(wA? sR/wA : 0);
+  const v07=sc.v.V07, v10=sc.v.V10;
+  const socle = v07 && v10 && v07.v!=="ND" && v10.v!=="ND" && v07.v>=2 && v10.v>=2;
+  let plafond=null;
+  if((obs>=70||pru>=70) && !socle){ obs=Math.min(obs,69); pru=Math.min(pru,69);
+    plafond="V ≥ 70 exige V07 ≥ 2 et V10 ≥ 2 : plafonné à 69 avant sélection décisionnelle."; }
+  const tous = {...W.Vv, ...W.Vc};
+  const kc = axe(sc.v, tous);
+  return {obs,pru,K:kc.K,Conf:kc.Conf,plafond,nVoies,
+          provisoire:nVoies<2, dec: dec(obs,pru,kc.K,kc.Conf), B_obs:B(lObs), B_pru:B(lPru)};
+}
+
+/* --- A : plafonds appliqués aux deux lectures avant sélection (§7.5) --- */
+function calcA(sc){
+  const b=axe(sc.A,W.A); let obs=b.obs,pru=b.pru; const regles=[]; let noPilot=false, aInstruire=false;
+  const val=id=>{const r=sc.A[id];return r?r.v:"ND";};
+  const cap=(x,r)=>{obs=Math.min(obs,x);pru=Math.min(pru,x);regles.push(r);};
+  if(val("A01")===0){ regles.push("A01 = 0 : le gisement reste un signal à investiguer, aucun scénario priorisable."); aInstruire=true; }
+  if(val("A02")===0){ cap(39,"A02 = 0 : plafond 39 et classement à instruire."); aInstruire=true; }
+  if(val("A03")===0){ cap(39,"A03 = 0 : plafond 39, aucune recommandation de pilote."); noPilot=true; }
+  ["A04","A05","A06"].forEach(id=>{ const v=val(id);
+    if(v===0||v==="ND") cap(49,id+" = "+(v==="ND"?"ND":"0")+" : plafond 49 tant qu'un profilage n'a pas levé l'inconnue."); });
+  const clinPopIA = sc.profil.includes("INFLUENCE_SOIN")||sc.profil.includes("DECISION_AUTO")||sc.cIA;
+  if(clinPopIA && num(val("A09")) && val("A09")<2){ regles.push("A09 < 2 pour un usage clinique, populationnel ou IA : pas de pilote opérationnel."); noPilot=true; }
+  return {...b,obs,pru,regles,noPilot,aInstruire,dec:dec(obs,pru,b.K,b.Conf)};
+}
+
+/* --- C : cibles, écarts, risque résiduel, statut de passage (§8) --- */
+function ciblesC(profil){
+  const t={C01:3,C02:2,C03:3,C04:3,C05:2,C06:2,C07:2,C08:3,C09:2}; const up=(k,v)=>t[k]=Math.max(t[k],v);
+  if(profil.includes("IDENTIFIANT")){["C02","C05","C08"].forEach(k=>up(k,3));}
+  if(profil.includes("GRANDE_ECHELLE")){["C03","C04","C05","C08"].forEach(k=>up(k,3));}
+  if(profil.includes("INFLUENCE_SOIN")){up("C06",4);["C07","C08"].forEach(k=>up(k,3));}
+  if(profil.includes("DECISION_AUTO")){["C06","C07","C08","C09"].forEach(k=>up(k,3));}
+  if(profil.includes("RECHERCHE")){["C01","C02","C05","C08","C09"].forEach(k=>up(k,3));}
+  if(profil.includes("TRANSFERT_EXTERNE")){up("C04",4);["C03","C08"].forEach(k=>up(k,3));}
+  if(profil.includes("PUBLICATION")){["C05","C08"].forEach(k=>up(k,4));}
+  return t;
+}
+function calcC(sc){
+  const cibles=ciblesC(sc.profil); const ecarts=[]; let sw=0,sr=0; const hypotheses=[];
+  const critiques=["C01","C03","C04","C06"];
+  let nonEvalue=false;
+  for(const id in W.C){
+    const r=sc.c[id]||{v:"ND",e:0}; const w=W.C[id];
+    let M=r.v, I=r.I, P=r.P, hyp=false;
+    if(M==="ND"||M==="NA"||!num(I)||!num(P)){ M=0;I=4;P=3;hyp=true;hypotheses.push(id); }
+    if(sc.profil.includes("INFLUENCE_SOIN")&&id==="C06") I=Math.max(I,4);
+    if(sc.profil.includes("IDENTIFIANT")&&["C03","C05"].includes(id)) I=Math.max(I,3);
+    const ri=100*(I*P/16)*k_[M];
+    sw+=w; sr+=w*ri;
+    const actuel = num(r.v)? r.v : null;
+    const gap = actuel===null? cibles[id] : Math.max(0,cibles[id]-actuel);
+    if(gap>0||actuel===null) ecarts.push({id,cible:cibles[id],actuel,gap,critique:critiques.includes(id)});
+    if(critiques.includes(id) && !num(r.v)) nonEvalue=true;
+  }
+  const R = sw? sr/sw : 0;
+  const c06=sc.c.C06;
+  const bloque = R>=70 || (sc.profil.includes("INFLUENCE_SOIN") && c06 && c06.v===0);
+  let statut;
+  if(nonEvalue) statut="NON_EVALUE";
+  else if(bloque) statut="BLOQUE";
+  else if(ecarts.some(e=>e.gap>0) || (R>=25&&R<70)) statut="CONDITIONNEL";
+  else statut="ADMISSIBLE";
+  let gapW=0,gapS=0; for(const id in W.C){ const e=ecarts.find(x=>x.id===id); gapW+=W.C[id]; gapS+=W.C[id]*(e?e.gap:0); }
+  return {cibles,ecarts,R,statut,hypotheses,GapC:gapW?25*gapS/gapW:0,
+          bloqueMotif: bloque ? (R>=70?"Risque résiduel ≥ 70":"C06 = 0 pour un usage influençant les soins") : null};
+}
+
+/* --- IA (§9.3) --- */
+function calcIA(sc,cst){
+  if(!sc.cIA || !Object.keys(sc.ia||{}).length) return null;
+  const b=axe(sc.ia,W.IA); let obs=b.obs,pru=b.pru; const regles=[];
+  const v=id=>{const r=sc.ia[id];return r?r.v:"ND";};
+  const cap=(x,t)=>{obs=Math.min(obs,x);pru=Math.min(pru,x);regles.push(t);};
+  if(num(v("IA01"))&&v("IA01")<2) cap(39,"IA01 < 2 : plafond 39.");
+  if(v("IA02")===0||v("IA03")===0) regles.push("IA02 ou IA03 = 0 : aucun apprentissage supervisé ; constituer d'abord une référence.");
+  if(num(v("IA04"))&&v("IA04")<2) regles.push("IA04 < 2 : aucune conclusion de généralisation.");
+  if(num(v("IA05"))&&v("IA05")<3) regles.push("IA05 < 3 : pas de pilote en situation réelle.");
+  if(sc.profil.includes("INFLUENCE_SOIN")&&num(v("IA06"))&&v("IA06")<3) regles.push("IA06 < 3 pour un usage clinique : pas de pilote influençant les soins.");
+  const c07=sc.c.C07; if(c07&&num(c07.v)&&c07.v<2) regles.push("C07 < 2 : pas de pilote sur une population réelle.");
+  let suspendu=false;
+  if(cst==="NON_EVALUE"||cst==="BLOQUE"){ suspendu=true; regles.push("Statut C "+(cst==="BLOQUE"?"bloqué":"non évalué")+" : recommandation IA suspendue."); }
+  const d=dec(obs,pru,b.K,b.Conf);
+  let reco = d>=75?"Pilote contrôlé, si V, A et C l'autorisent" : d>=60?"Preuve de concept sur données contrôlées"
+           : d>=40?"Exploration hors production" : "Ne pas engager d'IA ; clarifier le besoin ou préparer les données";
+  return {...b,obs,pru,dec:d,regles,suspendu,reco};
+}
+
+function calcScenario(sc){
+  const U=calcU(sc), V=calcV(sc), A=calcA(sc), C=calcC(sc);
+  const IA=calcIA(sc,C.statut);
+  const K_L=Math.min(U.K??0,V.K??0), Conf_L=Math.min(U.Conf??0,V.Conf??0);
+  const L_obs=V.obs*(1-U.obs/100), L_pru=V.pru*(1-U.haut/100);
+  const L_dec=dec(L_obs,L_pru,K_L,Conf_L);
+  const fourchette=[V.pru*(1-U.haut/100), V.obs*(1-U.bas/100)];
+  const K_dec=Math.min(U.K??0,V.K??0,A.K??0), Conf_dec=Math.min(U.Conf??0,V.Conf??0,A.Conf??0);
+  const O_V=Math.sqrt(V.dec*A.dec), O_L=Math.sqrt(L_dec*A.dec), O_Lc=O_L*(0.70+0.30*Conf_dec/100);
+  const u01=sc.u.U01, u05=sc.u.U05;
+  const ndU = (u01&&u01.v==="ND")||(u05&&u05.v==="ND");
+  const noPilot = A.noPilot;
+  let P;
+  if(C.statut==="BLOQUE") P="P0";
+  else if(K_dec<70||Conf_dec<60||ndU||C.statut==="NON_EVALUE"||A.aInstruire) P="P4";
+  else if(V.dec>=70&&L_dec>=60&&A.dec>=60&&C.statut==="ADMISSIBLE"&&!noPilot) P="P1";
+  else if(V.dec>=70&&L_dec>=60&&((A.dec>=40&&A.dec<60)||C.statut==="CONDITIONNEL")) P="P2";
+  else if(V.dec>=50&&L_dec>=40&&A.dec>=70&&C.statut==="ADMISSIBLE"&&!noPilot) P="P3";
+  else if(V.dec>=50||L_dec>=35) P="P5";
+  else P="P6";
+  let confLib = (K_dec<70||Conf_dec<60) ? "Insuffisante" : (K_dec>=85&&Conf_dec>=80) ? "Élevée" : "Bonne";
+  return {U,V,A,C,IA,L:{obs:L_obs,pru:L_pru,dec:L_dec,K:K_L,Conf:Conf_L,fourchette},
+          K_dec,Conf_dec,O_V,O_L,O_Lc,P,confLib,noPilot,
+          conditions:C.ecarts.filter(e=>e.gap>0).length + A.regles.length};
+}
+const P_LIB={P0:"Bloqué",P4:"À instruire",P1:"Candidat pilote",P2:"À préparer",P3:"Gain rapide",P5:"À incuber",P6:"Veille"};
+const P_DEC={P0:"Suspendre, abandonner ou redéfinir",P4:"Lever les inconnues avant tout classement",
+  P1:"Cadrer un pilote métier contrôlé",P2:"Financer un chantier ciblé",P3:"Tester un usage simple et mesurable",
+  P5:"Conserver avec hypothèse, propriétaire et jalon",P6:"Ne pas mobiliser de ressources"};
+const lireL=v=>v<20?"Faible ou non démontré":v<40?"Limité":v<60?"Significatif":v<80?"Fort":"Stratégique";
+const lireA=v=>v<25?"Non activable en l'état":v<40?"Exploration lourde":v<60?"Activable sous préparation":v<75?"Activable pour un pilote":"Fortement activable";
+const lireV=v=>v<25?"Valeur non démontrée":v<50?"Hypothèse à préciser":v<70?"Valeur crédible":v<85?"Forte valeur":"Valeur stratégique";
+const lireU=v=>v<20?"Valeur pratiquement non captée":v<40?"Exploitation faible":v<60?"Exploitation partielle":v<80?"Valeur majoritairement captée":"Scénario déjà largement satisfait";
+const C_LIB={NON_EVALUE:"Non évalué",BLOQUE:"Bloqué",CONDITIONNEL:"Conditionnel",ADMISSIBLE:"Admissible sous contrôles"};
+
+/* --- portefeuille patrimonial (§10.5) --- */
+function calcGisement(g){
+  const scs=S.scenarios.filter(s=>s.gis===g.id).map(s=>({s,r:calcScenario(s)}));
+  const elig=scs;                                   // scénarios actifs, définis et dédupliqués
+  const Einv=100*(S.preuveInventaire||0)/3;         // preuve que l'inventaire a bien été examiné
+  const pourL=scs.filter(x=>["ADMISSIBLE","CONDITIONNEL"].includes(x.r.C.statut))
+                 .sort((x,y)=>y.r.L.dec-x.r.L.dec).slice(0,3);
+  const pds=[0.60,0.25,0.15].slice(0,pourL.length);
+  const tot=pds.reduce((a,b)=>a+b,0)||1;
+  const Lstar=pourL.length? pourL.reduce((acc,x,i)=>acc+pds[i]*x.r.L.dec,0)/tot : 0;
+  const ConfL=pourL.length? pourL.reduce((acc,x,i)=>acc+pds[i]*x.r.L.Conf,0)/tot : 0;
+  const Pat=25*(g.V09||0), ConfPat=100*(g.V09preuve||0)/3;
+  let Lev=0,ConfLev=Einv;
+  const den=elig.length;
+  S.chantiers.forEach(w=>{
+    const nume=w.leve.filter(id=>elig.some(x=>x.s.id===id)).length;
+    if(den>0&&nume>0){ const l=100*nume/den; if(l>Lev){ Lev=l;
+      ConfLev=Math.min(100*w.preuve/3, Math.min(...w.leve.filter(id=>elig.some(x=>x.s.id===id))
+        .map(id=>{const f=elig.find(x=>x.s.id===id);return f.r.Conf_dec;}))); } }
+  });
+  const familles=new Set();
+  elig.forEach(x=>{ const vs=["V01","V02","V03","V04","V05","V06"].map(id=>({id,v:x.s.v[id]}))
+      .filter(o=>o.v&&num(o.v.v)&&o.v.v>=2).sort((p,q)=>q.v.v-p.v.v).slice(0,2);
+    vs.forEach(o=>familles.add(o.id)); });
+  const nf=familles.size, Div=25*Math.min(4,nf);
+  const ConfDiv=nf? Math.min(...elig.map(x=>x.r.Conf_dec)) : Einv;
+  const Sg=0.45*Lstar+0.20*Pat+0.20*Lev+0.15*Div;
+  const Confg=0.45*ConfL+0.20*ConfPat+0.20*ConfLev+0.15*ConfDiv;
+  const instruire = Confg<60 || scs.some(x=>x.r.K_dec<70||x.r.Conf_dec<60);
+  let statut;
+  if(instruire) statut="Instruire le patrimoine";
+  else if(Sg>=70 && scs.some(x=>x.r.C.statut!=="BLOQUE") && Lev>0) statut="Candidat à investissement";
+  else if(Sg>=45) statut="Investissement sélectif";
+  else statut="Maintenir / veille";
+  const ug=axe(g.ug,{UG01:1,UG02:1,UG03:1,UG04:1,UG05:1});
+  return {scs,Lstar,Pat,Lev,Div,Sg,Confg,statut,nf,Ug:ug.obs,K_UG:ug.K,familles:[...familles]};
+}
+
+/* ==========================================================================
+   4. INDICATEURS EDR (§8.2 de la spécification fonctionnelle)
+   ========================================================================== */
+function kpiEDR(){
+  const c=S.campagne;
+  const uPrio=c.unites.filter(u=>u.prio);
+  const fait=u=>u.etat==="EXPLOREE"||u.etat==="EXCLUE";
+  const CO_p=uPrio.length?100*uPrio.filter(fait).length/uPrio.length:null;
+  const CO_a=c.unites.length?100*c.unites.filter(fait).length/c.unites.length:null;
+  const sysD=c.systemes.filter(s=>s.etat!=="HORS_PERIMETRE");
+  const CS=sysD.length?100*sysD.filter(s=>s.etat==="EXAMINE"||s.etat==="EXCLU").length/sysD.length:null;
+  const CC_p=100*c.contributeurs.repondu/c.contributeurs.sollicites;
+  const CC_r=100*c.contributeurs.rolesCouverts/c.contributeurs.rolesAttendus;
+  const cells=Object.entries(c.cellules);
+  const tot=cells.length;
+  const cnt=e=>cells.filter(([,v])=>v===e).length;
+  const CF=tot?100*(cnt("ID")+cnt("AB")+cnt("NA"))/tot:null;
+  const critNC=cells.filter(([k,v])=>v==="NC"&&FAM_CRIT.has(FAMILLES[+k.split("|")[1]])).length;
+  const soumis=S.signaux.filter(s=>s.wf!=="BROUILLON").length;
+  const resolus=S.signaux.filter(s=>s.wf==="RESOLU");
+  const decision=soumis?100*resolus.length/soumis:null;
+  const gAct=S.gisements.length;
+  const nouv=S.gisements.filter(g=>g.prealable==="OUI"||g.prealable==="NON");
+  const novelty=nouv.length?100*nouv.filter(g=>g.prealable==="NON").length/nouv.length:null;
+  const croise=gAct?100*S.gisements.filter(g=>S.signaux.filter(s=>s.gis===g.id).length>=2).length/gAct:null;
+  const derniere=c.passes[c.passes.length-1];
+  const RM=gAct?100*derniere.nouveaux/gAct:null;
+  const prioNonResolus=S.signaux.filter(s=>s.wf!=="RESOLU").length;
+  const gouvNon=S.gisements.filter(g=>g.gouvernance==="A_IDENTIFIER").length;
+  let statut;
+  if(!tot||CO_p<50||(CS!==null&&CS<50)||critNC>tot*0.5) statut="INSUFFISANTE";
+  else if(CO_p>=90&&CS>=90&&critNC===0&&prioNonResolus===0&&c.contreExploration){
+    statut = RM<10 ? "FORTE" : "SATISFAISANTE";
+  } else statut="PARTIELLE";
+  return {CO_p,CO_a,CS,CC_p,CC_r,CF,critNC,decision,novelty,croise,RM,statut,
+          soumis,resolus:resolus.length,prioNonResolus,gouvNon,tot,
+          nc:cnt("NC"),id:cnt("ID"),ab:cnt("AB"),na:cnt("NA"),
+          fusion:S.signaux.filter(s=>s.res==="FUSIONNE").length,
+          ecarte:S.signaux.filter(s=>s.res==="ECARTE").length};
+}
+
+/* ==========================================================================
+   5. RENDU
+   ========================================================================== */
+const $=id=>document.getElementById(id);
+const f1=x=>(x===null||x===undefined||isNaN(x))?"N/A":x.toFixed(1);
+const f0=x=>(x===null||x===undefined||isNaN(x))?"N/A":Math.round(x);
+const esc=s=>String(s).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const VUES=[["edr","Campagne EDR"],["signaux","Signaux"],["gisements","Gisements"],
+            ["q1","Q1 et scénarios"],["q2","Q2 qualification"],["scenario","Tableau de bord"],["portefeuilles","Portefeuilles"]];
+
+function renderNav(){
+  $("nav").innerHTML = VUES.map(([k,l],i)=>
+    (i?'<span class="sep">›</span>':'')+
+    `<button data-vue="${k}" aria-current="${S.view===k}">${l}</button>`).join("");
+  const kp=kpiEDR();
+  $("bandeau").textContent =
+    "La couverture mesure ce qui a été exploré dans le périmètre. Elle ne garantit jamais que toutes les données ont été trouvées. "+
+    "Aucun contenu patient n'est stocké. "+S.gisements.length+" gisements et "+S.scenarios.length+" scénarios, décrits par des métadonnées et des déclarations attribuées.";
+}
+
+function kpi(v,l,d,pc){
+  const na=(v===null||v===undefined||isNaN(v));
+  return `<div class="kpi${na?' na':''}"><div class="v">${na?"N/A":(pc?f0(v)+" %":f0(v))}</div>
+    <div class="l">${l}</div>${d?`<div class="d">${d}</div>`:""}</div>`;
+}
+
+/* ---------- vue 1 : campagne EDR ---------- */
+function vueEDR(){
+  const c=S.campagne,k=kpiEDR();
+  const statutP={INSUFFISANTE:"p-hach",PARTIELLE:"p-gris",SATISFAISANTE:"p-teal",FORTE:"p-lime"}[k.statut];
+  const cloture=[
+    ["Contre-exploration réalisée",c.contreExploration],
+    ["Aucun signal prioritaire non résolu",k.prioNonResolus===0],
+    ["Aucune cellule critique non vérifiée",k.critNC===0],
+    ["Couverture organisationnelle prioritaire ≥ 90 %",k.CO_p>=90],
+    ["Couverture des systèmes connus ≥ 90 %",k.CS>=90],
+    ["Rendement de la dernière passe < 10 %",k.RM<10],
+    ["Chaque gisement a un interlocuteur ou une action de gouvernance",k.gouvNon===0],
+    ["Aucune copie de contenu patient nécessaire",true]
+  ];
+  return `
+  <div class="titre"><div><h1>${esc(c.nom)}</h1>
+    <small class="mono-id">${c.id}, passe ${c.passe}, ouverte le ${c.debut}, pilote : ${esc(c.pilote)}</small></div>
+    <span class="p ${statutP}">Couverture ${k.statut.toLowerCase()}</span></div>
+  <p class="chapeau">Périmètre : ${esc(c.perimetre)}. Exclusions : ${esc(c.exclusions)}.
+     La campagne organise la capacité de l'établissement à découvrir ses gisements ; elle ne scanne aucun système.</p>
+
+  <div class="grille g4">
+    ${kpi(k.CO_p,"Couverture organisationnelle prioritaire",c.unites.filter(u=>u.prio&&(u.etat!=="PREVUE")).length+" / "+c.unites.filter(u=>u.prio).length+" unités",1)}
+    ${kpi(k.CS,"Systèmes connus examinés ou exclus",c.systemes.filter(s=>["EXAMINE","EXCLU"].includes(s.etat)).length+" / "+c.systemes.filter(s=>s.etat!=="HORS_PERIMETRE").length,1)}
+    ${kpi(k.CF,"Familles de données résolues",k.tot-k.nc+" / "+k.tot+" cellules",1)}
+    ${kpi(k.CC_p,"Contributeurs ayant répondu",c.contributeurs.repondu+" / "+c.contributeurs.sollicites,1)}
+    ${kpi(k.CC_r,"Rôles couverts",c.contributeurs.rolesCouverts+" / "+c.contributeurs.rolesAttendus,1)}
+    ${kpi(k.novelty,"Gisements absents des inventaires","dénominateur : "+S.gisements.filter(g=>g.prealable!=="INCONNU").length+" gisements",1)}
+    ${kpi(k.croise,"Confirmation par au moins deux signaux","indépendance : auteur et canal différents",1)}
+    ${kpi(k.RM,"Rendement de la dernière passe",c.passes.map(p=>p.id+" : +"+p.nouveaux).join(" · "),1)}
+  </div>
+
+  <div class="sect"><h2>Grille des angles morts</h2>
+    <div class="sub">Chaque cellule croise une famille de données et une unité du périmètre. Cliquez pour faire évoluer son état.
+      Une cellule non vérifiée crée une action ; les familles critiques bloquent la clôture tant qu'elles ne sont pas résolues.</div>
+    <div class="carte scroll">${grilleAM()}</div>
+    <div class="ligne" style="margin-top:12px">
+      <span class="tag">${k.id} identifiées, ${k.ab} absentes déclarées, ${k.na} non applicables, ${k.nc} non vérifiées dont ${k.critNC} critiques</span>
+    </div>
+  </div>
+
+  <div class="grille g2 sect">
+    <div class="carte"><h3>Unités du périmètre</h3>
+      <ul class="liste-nette" style="margin-top:8px">${c.unites.map(u=>`<li>
+        <span>${esc(u.nom)}${u.prio?' <span class="tag">prioritaire</span>':''}</span>
+        <span class="p ${u.etat==="EXPLOREE"?"p-teal":u.etat==="EXCLUE"?"p-gris":"p-hach"}">${{EXPLOREE:"Explorée",EXCLUE:"Exclue",PREVUE:"Prévue"}[u.etat]}</span></li>`).join("")}</ul></div>
+    <div class="carte"><h3>Systèmes connus</h3>
+      <ul class="liste-nette" style="margin-top:8px">${c.systemes.map(s=>`<li>
+        <span>${esc(s.nom)}</span>
+        <span class="p ${s.etat==="EXAMINE"?"p-teal":s.etat==="A_REVOIR"?"p-hach":"p-gris"}">${{EXAMINE:"Examiné",EXCLU:"Exclu",A_REVOIR:"À examiner",HORS_PERIMETRE:"Hors périmètre"}[s.etat]}</span></li>`).join("")}</ul></div>
+  </div>
+
+  <div class="sect"><h2>Clôture proposée</h2>
+    <div class="sub">Le moteur propose, il ne clôture jamais seul. Les invariants ne sont pas dérogeables ; les seuils expérimentaux le sont, avec motif visible.</div>
+    <div class="carte"><ul class="liste-nette">${cloture.map(([t,ok])=>`<li><span>${t}</span>
+      <span class="p ${ok?"p-teal":"p-hach"}">${ok?"Satisfait":"Non satisfait"}</span></li>`).join("")}</ul>
+      <div class="encadre att" style="margin-top:16px">
+        ${cloture.every(x=>x[1])
+          ? "Tous les critères sont réunis. La clôture reste une décision humaine, attribuée et motivée."
+          : "Clôture impossible en l'état : "+cloture.filter(x=>!x[1]).length+" critères ouverts. Le DIM n'a pas encore été exploré et deux signaux attendent une décision."}
+      </div></div></div>`;
+}
+function grilleAM(){
+  const zones=S.campagne.unites.filter(u=>u.prio);
+  return `<table class="am"><thead><tr><th style="min-width:200px">Famille de données</th>
+    ${zones.map(z=>`<th>${esc(z.nom)}</th>`).join("")}</tr></thead><tbody>
+    ${FAMILLES.map((f,i)=>`<tr><th style="text-align:left;font-weight:400;color:var(--encre)">
+      ${esc(f)}${FAM_CRIT.has(f)?' <span class="tag">critique</span>':''}</th>
+      ${zones.map(z=>{const v=S.campagne.cellules[z.id+"|"+i];
+        return `<td><button class="s-${v}" data-cell="${z.id}|${i}" title="${CELL_LIB[v]}">${CELL_LIB[v]}</button></td>`;}).join("")}
+    </tr>`).join("")}</tbody></table>`;
+}
+
+/* ---------- vue 2 : signaux ---------- */
+function vueSignaux(){
+  const CAN={R1:"Institutionnel",R2:"Technique",R3:"Usage",R4:"Métier",R5:"Périphérique"};
+  const badge=s=>{
+    if(s.res==="CONFIRME") return '<span class="p p-teal">Confirmé</span>';
+    if(s.res==="FUSIONNE") return '<span class="p p-gris">Fusionné</span>';
+    if(s.res==="ECARTE")   return '<span class="p p-gris">Écarté, historisé</span>';
+    if(s.wf==="EN_REVUE")  return '<span class="p p-violet">En revue</span>';
+    return '<span class="p p-hach">À arbitrer</span>';
+  };
+  const enAttente=S.signaux.filter(s=>s.wf!=="RESOLU");
+  return `
+  <div class="titre"><div><h1>File des signaux</h1>
+    <small>Un signal n'est pas un gisement. Aucun score n'est calculé à ce stade.</small></div></div>
+  <p class="chapeau">Le pilote arbitre chaque signal : confirmer, préciser, réaffecter, fusionner, scinder ou écarter.
+     Un signal écarté reste historisé avec sa justification, un signal fusionné conserve sa provenance.</p>
+
+  <div class="carte">
+    <h3>Créer un signal</h3>
+    <div class="sub" style="margin:4px 0 12px">Saisie rapide, sans source ni interlocuteur obligatoire.</div>
+    <div class="ligne">
+      <div style="flex:2 1 260px"><label class="champ" for="sn">Nom provisoire</label>
+        <input type="text" id="sn" placeholder="Ex. Tableur de suivi des sorties contre avis médical"></div>
+      <div style="flex:1 1 150px"><label class="champ" for="sz">Unité</label><select id="sz">
+        ${S.campagne.unites.map(u=>`<option value="${u.id}">${esc(u.nom)}</option>`).join("")}</select></div>
+      <div style="flex:1 1 150px"><label class="champ" for="sc">Canal de découverte</label><select id="sc">
+        ${Object.entries(CAN).map(([k,v])=>`<option value="${k}">${k} ${v}</option>`).join("")}</select></div>
+      <div style="flex:1 1 200px"><label class="champ" for="sm">Motif du signalement</label><select id="sm">
+        ${["Peu utilisé","Historique important","Donnée peu connue","Difficile d'accès","Beaucoup de travail manuel",
+           "Peu analysé","Contenu riche en texte","Demande récurrente d'autres équipes","Usage potentiel inconnu"]
+          .map(m=>`<option>${m}</option>`).join("")}</select></div>
+      <button class="btn" data-action="add-signal">Créer le signal</button>
+    </div>
+  </div>
+
+  <div class="sect"><h2>Signaux de la campagne</h2>
+  <div class="carte scroll"><table><thead><tr>
+    <th>Identifiant</th><th>Nom provisoire</th><th>Unité</th><th>Canal</th><th>Auteur</th>
+    <th>Motif</th><th>Statut</th><th>Gisement</th><th></th></tr></thead><tbody>
+    ${S.signaux.map(s=>{const z=S.campagne.unites.find(u=>u.id===s.zone);
+      return `<tr><td class="mono-id">${s.id}</td><td>${esc(s.nom)}</td><td>${z?esc(z.nom):"non précisée"}</td>
+      <td>${s.canal} <span class="tag">${CAN[s.canal]}</span></td><td>${esc(s.auteur)}</td>
+      <td><small>${esc(s.motif)}</small></td><td>${badge(s)}</td>
+      <td class="mono-id">${s.gis||"aucun"}</td>
+      <td>${s.wf!=="RESOLU"?`<div class="ligne" style="gap:4px">
+        <button class="btn mini" data-action="confirm-signal" data-id="${s.id}">Confirmer</button>
+        <button class="btn mini gris" data-action="dismiss-signal" data-id="${s.id}">Écarter</button></div>`:""}</td></tr>`;}).join("")}
+  </tbody></table></div></div>
+
+  ${enAttente.length?`<div class="encadre" style="margin-top:20px">
+    ${enAttente.length} signaux attendent une décision. Confirmer un signal crée le gisement canonique en une transaction :
+    identifiant pérenne, provenance conservée, aucun dossier de qualification ouvert à ce stade.</div>`:""}`;
+}
+
+/* ---------- vue 3 : gisements ---------- */
+function vueGisements(){
+  const g=S.gisements.find(x=>x.id===S.gisementCourant)||S.gisements[0];
+  const r=calcGisement(g);
+  const champD=[["D02 Nom usuel",g.nom],["D03 Définition",g.definition],["D04 Famille",g.famille],
+    ["D05 Organisation et périmètre",(S.campagne.unites.find(u=>u.id===g.zone)||{}).nom||"non précisée"],
+    ["D06 Sources",g.sources],["D07 Producteur",g.producteur],["D08 Responsable métier",g.rmetier],
+    ["D09 Responsable technique",g.rtech],["D10 Population",g.population],["D11 Période et rythme",g.periode],
+    ["D12 Modalités",g.modalites],["D13 Granularité",g.granularite],["D15 Sensibilité présumée",g.sensibilite],
+    ["D16 Usage initial",g.usageInitial],["D19 Contraintes connues",g.contraintes],
+    ["V09 Valeur patrimoniale validée",(g.V09!==undefined?g.V09+" / 4 · preuve E"+g.V09preuve:"non cotée")]];
+  return `
+  <div class="titre"><div><h1>Registre des gisements</h1>
+    <small>${S.gisements.length} gisements confirmés. Chacun porte un identifiant pérenne et sa provenance. L'état de qualification appartient aux scénarios, pas au gisement.</small></div></div>
+  <div class="ligne" style="margin-bottom:20px">
+    <div style="flex:1 1 420px"><label class="champ" for="gsel">Gisement</label><select id="gsel" data-action="sel-gis">
+      ${S.gisements.map(x=>`<option value="${x.id}" ${x.id===g.id?"selected":""}>${x.id} ${esc(x.nom)}</option>`).join("")}</select></div>
+  </div>
+
+  <div class="grille g2">
+    <div class="carte"><h3>Fiche D, description du gisement</h3>
+      <table style="margin-top:8px">${champD.map(([l,v])=>
+        `<tr><td style="color:var(--gris);width:38%">${l}</td><td>${esc(v)}</td></tr>`).join("")}</table></div>
+    <div>
+      <div class="carte"><h3>Profil d'usage du gisement</h3>
+        <div class="sub" style="margin:4px 0 12px">Lecture patrimoniale U<sub>g</sub>, distincte de U du scénario. Elle n'est jamais soustraite à V.</div>
+        <div style="font-size:34px;font-weight:600" class="num">${f1(r.Ug)}<span style="font-size:15px;color:var(--gris);font-weight:400"> / 100 · complétude ${f0(r.K_UG)} %</span></div>
+        <div class="jauge lime"><i style="width:${r.Ug}%"></i></div>
+        <ul class="liste-nette" style="margin-top:12px">${Object.keys(g.ug).map(id=>{
+          const rep=g.ug[id];
+          return `<li><span>${LIB[id]}</span><span class="num">${rep.v==="ND"?"ND":rep.v+" / 4"} <span class="tag">E${rep.e}</span></span></li>`;}).join("")}</ul>
+      </div>
+      <div class="carte" style="margin-top:16px"><h3>Provenance</h3>
+        <ul class="liste-nette" style="margin-top:8px">${S.signaux.filter(s=>s.gis===g.id).map(s=>
+          `<li><span>${s.id} ${esc(s.nom)}<br><small>${esc(s.auteur)} · canal ${s.canal}</small></span>
+           <span class="p p-gris">${s.res==="CONFIRME"?"Origine":"Fusionné"}</span></li>`).join("")||"<li><small>Aucun signal rattaché.</small></li>"}</ul>
+        <div style="margin-top:12px" class="tag">Recensé avant la campagne : ${g.prealable==="OUI"?"oui":"non"} ·
+          passe ${g.passe} · gouvernance : ${g.gouvernance==="IDENTIFIE"?"responsable identifié":"à identifier"}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sect"><h2>Scénarios rattachés</h2>
+  <div class="carte scroll"><table><thead><tr><th>Scénario</th><th>Origine</th><th class="n">L décisionnel</th>
+    <th class="n">A décisionnel</th><th>Statut C</th><th>Statut</th><th></th></tr></thead><tbody>
+    ${r.scs.map(({s,r:rr})=>`<tr><td>${esc(s.titre)}<br><small class="mono-id">${s.id}</small></td>
+      <td><small>${esc(s.origine)}</small></td><td class="n">${f1(rr.L.dec)}</td><td class="n">${f1(rr.A.dec)}</td>
+      <td><span class="p ${rr.C.statut==="ADMISSIBLE"?"p-teal":rr.C.statut==="BLOQUE"?"p-encre":"p-hach"}">${C_LIB[rr.C.statut]}</span></td>
+      <td><span class="p ${rr.P==="P0"?"p-encre":rr.P==="P4"?"p-hach":"p-violet"}">${P_LIB[rr.P]}</span></td>
+      <td><button class="btn mini sec" data-action="open-scn" data-id="${s.id}">Ouvrir</button></td></tr>`).join("")
+      ||`<tr><td colspan="7"><small>Aucun scénario validé. Passez par Q1 pour formuler ou valider une suggestion.</small></td></tr>`}
+  </tbody></table></div></div>`;
+}
+
+/* ---------- vue 4 : Q1 et suggestions ---------- */
+function vueQ1(){
+  const sugs=S.suggestions;
+  return `
+  <div class="titre"><div><h1>Q1, détection et formulation des scénarios</h1>
+    <small>Aucun calcul décisionnel U, V, L, A, C ou IA n'est autorisé pendant Q1.</small></div></div>
+  <p class="chapeau">Q1 complète la fiche D, le profil d'usage général et les premiers signaux A et C.
+     Le moteur peut proposer jusqu'à cinq scénarios candidats à partir des seules métadonnées.
+     Une suggestion reste une hypothèse non scorée tant qu'un professionnel habilité ne l'a pas validée ou reformulée.</p>
+
+  <div class="sect"><h2>Suggestions du moteur de découverte</h2>
+  <div class="sub">Générées à partir de la famille, de la modalité, de la profondeur historique, du producteur et des usages déclarés.
+    Elles ne portent ni score, ni priorité, ni recommandation de pilote.</div>
+  <div class="grille g2">${sugs.map(s=>{const g=S.gisements.find(x=>x.id===s.gis);
+    return `<div class="carte"><div class="ligne" style="justify-content:space-between">
+      <span class="p p-violet">Suggestion non scorée</span><span class="mono-id">${s.id}</span></div>
+      <h3 style="margin-top:10px">${esc(s.titre)}</h3>
+      <div class="tag" style="margin:4px 0 10px">${g?esc(g.nom):""} · première voie de valeur ${s.voie} ${LIB[s.voie]}</div>
+      <table><tr><td style="color:var(--gris);width:34%">Hypothèses</td><td>${esc(s.hypotheses)}</td></tr>
+      <tr><td style="color:var(--gris)">Inconnues</td><td>${esc(s.inconnues)}</td></tr>
+      <tr><td style="color:var(--gris)">Méthode de référence</td><td>${esc(s.baseline)}</td></tr></table>
+      <div class="ligne" style="margin-top:12px">
+        <button class="btn" data-action="valider-sug" data-id="${s.id}">Valider et créer le scénario</button>
+        <button class="btn sec" data-action="rejeter-sug" data-id="${s.id}">Rejeter</button></div></div>`;}).join("")
+      ||`<div class="carte"><small>Toutes les suggestions ont été traitées.</small></div>`}</div></div>
+
+  <div class="sect"><h2>Scénarios validés</h2>
+  <div class="sub">Un scénario existe seulement après validation ou reformulation humaine, avec finalité, bénéficiaire, décision, résultat, population et horizon figés.</div>
+  <div class="carte scroll"><table><thead><tr><th>Scénario</th><th>Gisement</th><th>Finalité</th>
+    <th>Bénéficiaire</th><th>Horizon</th><th>Cas IA</th></tr></thead><tbody>
+    ${S.scenarios.map(s=>{const g=S.gisements.find(x=>x.id===s.gis);
+      return `<tr><td>${esc(s.titre)}<br><small class="mono-id">${s.id} · ${esc(s.origine)}</small></td>
+      <td><small>${g?esc(g.nom):""}</small></td><td><small>${esc(s.finalite)}</small></td>
+      <td><small>${esc(s.beneficiaire)}</small></td><td>${esc(s.horizon)}</td>
+      <td>${s.cIA?'<span class="p p-violet">Ouvert</span>':'<span class="tag">non</span>'}</td></tr>`;}).join("")}
+  </tbody></table></div></div>`;
+}
+
+/* ---------- vue 5 : Q2 saisie ---------- */
+function vueQ2(){
+  const sc=S.scenarios.find(x=>x.id===S.scenarioCourant)||S.scenarios[0];
+  const g=S.gisements.find(x=>x.id===sc.gis);
+  const onglets=[["U","Usage actuel"],["V","Valeur potentielle"],["A","Activabilité"],["C","Conditions et risques"]];
+  if(sc.cIA) onglets.push(["IA","Aptitude IA"]);
+  return `
+  <div class="titre"><div><h1>Q2, qualification distribuée</h1>
+    <small>${esc(sc.titre)} · <span class="mono-id">${sc.id}</span> · ${g?esc(g.nom):""}</small></div></div>
+  <div class="ligne" style="margin-bottom:20px"><div style="flex:1 1 460px">
+    <label class="champ" for="ssel">Scénario</label><select id="ssel" data-action="sel-scn">
+      ${S.scenarios.map(x=>`<option value="${x.id}" ${x.id===sc.id?"selected":""}>${x.id} ${esc(x.titre)}</option>`).join("")}
+    </select></div></div>
+  <div class="tabs">${onglets.map(([k,l])=>
+    `<button data-tab="${k}" aria-current="${S.tabQ===k}">${l}</button>`).join("")}</div>
+  <div class="carte">${S.tabQ==="C"?blocC(sc):S.tabQ==="U"?blocU(sc):blocSimple(sc,S.tabQ)}</div>
+  <div class="encadre" style="margin-top:16px">
+    ND n'est jamais assimilé à zéro : il déclenche une instruction et élargit la fourchette de potentiel latent.
+    NA exige une justification validée et redistribue le poids sur les critères applicables du même axe.
+  </div>`;
+}
+function selNiv(sc,bloc,id,champ,val){
+  const opts=["ND","NA",0,1,2,3,4].map(o=>
+    `<option value="${o}" ${String(val)===String(o)?"selected":""}>${o==="ND"?"ND, non déterminé":o==="NA"?"NA, non applicable":o}</option>`).join("");
+  return `<select data-edit="${bloc}|${id}|${champ}">${opts}</select>`;
+}
+function selPreuve(sc,bloc,id,val){
+  return `<select data-edit="${bloc}|${id}|e">${[0,1,2,3].map(o=>
+    `<option value="${o}" ${o===val?"selected":""}>E${o}, ${["aucune preuve","déclaratif","documenté","vérifié"][o]}</option>`).join("")}</select>`;
+}
+function blocSimple(sc,bloc){
+  const src = bloc==="V"?sc.v:bloc==="A"?sc.A:sc.ia;
+  const ids = bloc==="V"?[...Object.keys(W.Vv),...Object.keys(W.Vc)]:Object.keys(bloc==="A"?W.A:W.IA);
+  const poids = bloc==="V"?{...W.Vv,...W.Vc}:(bloc==="A"?W.A:W.IA);
+  return ids.map(id=>{const r=src[id]||{v:"ND",e:0};
+    return `<div class="crit"><div class="hd"><h4>${id} ${LIB[id]}</h4>
+      <span class="tag">poids ${poids[id]} %${bloc==="V"&&W.Vv[id]?" (voie de valeur)":""}</span></div>
+      <div class="q">${QUESTION[id]||""}</div>
+      <div class="ctl"><div><label class="champ">Niveau</label>${selNiv(sc,bloc,id,"v",r.v)}</div>
+        <div><label class="champ">Preuve</label>${selPreuve(sc,bloc,id,r.e)}</div></div></div>`;}).join("");
+}
+function blocU(sc){
+  return Object.keys(W.U).map(id=>{const r=sc.u[id]||{v:"ND",e:0};
+    const contra = num(r.d)&&num(r.o)&&Math.abs(r.d-r.o)>=2;
+    return `<div class="crit"><div class="hd"><h4>${id} ${LIB[id]}</h4><span class="tag">poids ${W.U[id]} %</span></div>
+      <div class="q">${QUESTION[id]}</div>
+      <div class="ctl">
+        <div><label class="champ">Niveau retenu</label>${selNiv(sc,"U",id,"v",r.v)}</div>
+        <div><label class="champ">Usage déclaré</label>${selNiv(sc,"U",id,"d",r.d===null||r.d===undefined?"ND":r.d)}</div>
+        <div><label class="champ">Usage objectivé</label>${selNiv(sc,"U",id,"o",r.o===null||r.o===undefined?"ND":r.o)}</div>
+        <div><label class="champ">Preuve</label>${selPreuve(sc,"U",id,r.e)}</div></div>
+      ${contra?`<div class="encadre att" style="margin-top:10px">Écart d'au moins deux niveaux entre déclaré et objectivé :
+        anomalie à instruire. Aucune moyenne automatique ; la borne haute retient ${Math.max(r.d,r.o)}.</div>`:""}
+    </div>`;}).join("");
+}
+function blocC(sc){
+  const cib=ciblesC(sc.profil);
+  const profils={PERSONNEL_SANTE:"Données personnelles de santé",IDENTIFIANT:"Données directement identifiantes",
+    GRANDE_ECHELLE:"Grande échelle ou multi-source",INFLUENCE_SOIN:"Influence directe sur un soin",
+    DECISION_AUTO:"Décision automatisée sur une personne",RECHERCHE:"Recherche, étude ou entrepôt",
+    TRANSFERT_EXTERNE:"Transfert externe ou nouveau sous-traitant",PUBLICATION:"Publication ou partage ouvert"};
+  return `<div style="margin-bottom:16px"><h4>Profil du scénario</h4>
+    <div class="sub" style="margin:4px 0 10px">Le profil détermine les maturités cibles. Il n'est pas une appréciation libre du répondant.</div>
+    <div class="ligne">${Object.entries(profils).map(([k,l])=>
+      `<button class="btn mini ${sc.profil.includes(k)?"":"gris"}" data-action="toggle-profil" data-id="${k}">${l}</button>`).join("")}</div></div>
+  ${Object.keys(W.C).map(id=>{const r=sc.c[id]||{v:"ND",e:0,I:null,P:null};
+    const gap=num(r.v)?Math.max(0,cib[id]-r.v):cib[id];
+    return `<div class="crit"><div class="hd"><h4>${id} ${LIB[id]}</h4>
+      <span class="tag">poids ${W.C[id]} % · cible ${cib[id]}${gap>0?` · écart ${gap}`:""}</span></div>
+      <div class="q">${QUESTION[id]}</div>
+      <div class="ctl">
+        <div><label class="champ">Maturité du contrôle</label>${selNiv(sc,"C",id,"v",r.v)}</div>
+        <div><label class="champ">Impact</label><select data-edit="C|${id}|I">${["ND",1,2,3,4].map(o=>
+          `<option value="${o}" ${(o==="ND"?!num(r.I):r.I===o)?"selected":""}>${o}</option>`).join("")}</select></div>
+        <div><label class="champ">Exposition</label><select data-edit="C|${id}|P">${["ND",1,2,3,4].map(o=>
+          `<option value="${o}" ${(o==="ND"?!num(r.P):r.P===o)?"selected":""}>${o}</option>`).join("")}</select></div>
+        <div><label class="champ">Preuve</label>${selPreuve(sc,"C",id,r.e)}</div></div>
+      ${gap>0?`<div class="tag" style="margin-top:8px">Écart ouvert : une action de maîtrise est créée avec niveau cible, responsable, preuve de clôture et autorité de validation.</div>`:""}
+    </div>`;}).join("")}`;
+}
+
+/* ---------- vue 6 : tableau de bord d'un scénario ---------- */
+function vueScenario(){
+  const sc=S.scenarios.find(x=>x.id===S.scenarioCourant)||S.scenarios[0];
+  const g=S.gisements.find(x=>x.id===sc.gis); const r=calcScenario(sc);
+  const badges=[];
+  if(r.P==="P4") badges.push(['p-hach',"À instruire"]);
+  if(r.U.dec>=80&&r.V.dec>=70) badges.push(['p-gris',"Valeur déjà captée"]);
+  if(r.noPilot) badges.push(['p-encre',"Pas de pilote"]);
+  if(r.IA&&r.IA.suspendu) badges.push(['p-encre',"IA suspendue"]);
+  if(r.V.provisoire) badges.push(['p-hach',"V provisoire"]);
+  const msg=[
+    ["Potentiel latent",lireL(r.L.dec),f1(r.L.dec)+" / 100","lime"],
+    ["Activabilité",lireA(r.A.dec),f1(r.A.dec)+" / 100","teal"],
+    ["Confiance",r.confLib,"complétude "+f0(r.K_dec)+" % · preuve "+f0(r.Conf_dec)+" %",""],
+    ["Conditions",r.conditions+" action"+(r.conditions>1?"s":"")+" préalable"+(r.conditions>1?"s":""),C_LIB[r.C.statut],""],
+    ["Recommandation",P_LIB[r.P],P_DEC[r.P],""]
+  ];
+  return `
+  <div class="titre"><div><h1>${esc(sc.titre)}</h1>
+    <small class="mono-id">${sc.id} · ${g?esc(g.nom):""} · ${esc(sc.horizon)}</small></div>
+    <div class="ligne">${badges.map(([c,t])=>`<span class="p ${c}">${t}</span>`).join("")}</div></div>
+  <div class="ligne" style="margin-bottom:20px"><div style="flex:1 1 460px">
+    <label class="champ" for="ssel2">Scénario</label><select id="ssel2" data-action="sel-scn">
+      ${S.scenarios.map(x=>`<option value="${x.id}" ${x.id===sc.id?"selected":""}>${x.id} ${esc(x.titre)}</option>`).join("")}
+    </select></div></div>
+
+  <div class="grille g3">${msg.map(([l,v,d,c])=>`<div class="kpi">
+    <div class="l">${l}</div><div style="font-size:19px;font-weight:600;margin:2px 0">${v}</div>
+    <div class="d">${d}</div>${c?`<div class="jauge ${c}"><i style="width:${l==="Potentiel latent"?r.L.dec:r.A.dec}%"></i></div>`:""}</div>`).join("")}</div>
+
+  <div class="grille g2 sect">
+    <div class="carte"><h3>Le scénario</h3><table style="margin-top:8px">
+      <tr><td style="color:var(--gris);width:32%">Finalité</td><td>${esc(sc.finalite)}</td></tr>
+      <tr><td style="color:var(--gris)">Bénéficiaire</td><td>${esc(sc.beneficiaire)}</td></tr>
+      <tr><td style="color:var(--gris)">Décision améliorée</td><td>${esc(sc.decision)}</td></tr>
+      <tr><td style="color:var(--gris)">Résultat attendu</td><td>${esc(sc.resultat)}</td></tr>
+      <tr><td style="color:var(--gris)">Population</td><td>${esc(sc.population)}</td></tr></table></div>
+    <div class="carte"><h3>Conditions à lever</h3>
+      <ul class="liste-nette" style="margin-top:8px">
+      ${r.C.ecarts.filter(e=>e.gap>0).map(e=>`<li><span>${e.id} ${LIB[e.id]}<br>
+        <small>${e.actuel===null?"non renseigné":"niveau "+e.actuel} · cible ${e.cible}</small></span>
+        <span class="p ${e.critique?"p-encre":"p-hach"}">${e.critique?"critique":"écart "+e.gap}</span></li>`).join("")}
+      ${r.A.regles.map(t=>`<li><span><small>${t}</small></span><span class="p p-hach">activabilité</span></li>`).join("")}
+      ${(!r.C.ecarts.filter(e=>e.gap>0).length&&!r.A.regles.length)?"<li><small>Aucune condition ouverte.</small></li>":""}
+      </ul></div>
+  </div>
+
+  ${r.IA?`<div class="sect"><h2>Aptitude IA</h2><div class="carte">
+    <div class="ligne" style="justify-content:space-between;align-items:baseline">
+      <div><div style="font-size:27px;font-weight:600" class="num">${f1(r.IA.dec)}<span style="font-size:15px;color:var(--gris);font-weight:400"> / 100</span></div>
+      <div class="tag">Recommandation maximale : ${r.IA.reco}</div></div>
+      ${r.IA.suspendu?'<span class="p p-encre">Recommandation suspendue</span>':""}</div>
+    <ul class="liste-nette" style="margin-top:12px">${r.IA.regles.map(t=>`<li><small>${t}</small></li>`).join("")||"<li><small>Aucun plafond déclenché.</small></li>"}</ul>
+  </div></div>`:""}
+
+  <div class="sect"><h2>Comprendre le calcul</h2>
+  <div class="sub">Vue d'explication : lectures observée, prudente et décisionnelle, complétude, confiance, règles déclenchées et hypothèses de borne.
+    Aucun classement ne dépend de la capacité à lire ce tableau.</div>
+  <div class="grille g2 audit">
+    <div class="carte"><h4>Axes quantitatifs</h4>
+      <table style="margin-top:8px"><thead><tr><th>Axe</th><th class="n">Observé</th><th class="n">Prudent</th>
+        <th class="n">Décisionnel</th><th class="n">K</th><th class="n">Conf</th></tr></thead><tbody>
+        <tr><td>Usage U</td><td class="n">${f1(r.U.obs)}</td><td class="n">${f1(r.U.pru)}</td><td class="n">${f1(r.U.dec)}</td><td class="n">${f0(r.U.K)}</td><td class="n">${f0(r.U.Conf)}</td></tr>
+        <tr><td>Valeur V</td><td class="n">${f1(r.V.obs)}</td><td class="n">${f1(r.V.pru)}</td><td class="n">${f1(r.V.dec)}</td><td class="n">${f0(r.V.K)}</td><td class="n">${f0(r.V.Conf)}</td></tr>
+        <tr><td>Potentiel latent L</td><td class="n">${f1(r.L.obs)}</td><td class="n">${f1(r.L.pru)}</td><td class="n">${f1(r.L.dec)}</td><td class="n">${f0(r.L.K)}</td><td class="n">${f0(r.L.Conf)}</td></tr>
+        <tr><td>Activabilité A</td><td class="n">${f1(r.A.obs)}</td><td class="n">${f1(r.A.pru)}</td><td class="n">${f1(r.A.dec)}</td><td class="n">${f0(r.A.K)}</td><td class="n">${f0(r.A.Conf)}</td></tr>
+        ${r.IA?`<tr><td>IA</td><td class="n">${f1(r.IA.obs)}</td><td class="n">${f1(r.IA.pru)}</td><td class="n">${f1(r.IA.dec)}</td><td class="n">${f0(r.IA.K)}</td><td class="n">${f0(r.IA.Conf)}</td></tr>`:""}
+      </tbody></table>
+      <table style="margin-top:12px">
+        <tr><td>Lecture U</td><td>${lireU(r.U.dec)}</td></tr>
+        <tr><td>Lecture V</td><td>${lireV(r.V.dec)}</td></tr>
+        <tr><td>Bornes U (bas / haut)</td><td class="num">${f1(r.U.bas)} / ${f1(r.U.haut)}</td></tr>
+        <tr><td>Fourchette de potentiel latent</td><td class="num">${f1(r.L.fourchette[0])} à ${f1(r.L.fourchette[1])}
+          <br><small>Fourchette d'incertitude méthodologique, pas un intervalle de confiance statistique.</small></td></tr>
+        <tr><td>Voies de valeur renseignées</td><td>${r.V.nVoies} sur 6 · B observé ${f1(r.V.B_obs)}</td></tr>
+        <tr><td>K et Conf décisionnels</td><td class="num">${f0(r.K_dec)} % · ${f0(r.Conf_dec)} %</td></tr>
+        <tr><td>O<sub>V</sub> / O<sub>L</sub> / O<sub>Lc</sub></td><td class="num">${f1(r.O_V)} · ${f1(r.O_L)} · ${f1(r.O_Lc)}</td></tr>
+      </table></div>
+    <div class="carte"><h4>Règles déclenchées et bloc C</h4>
+      <table style="margin-top:8px">
+        <tr><td>Statut de passage C</td><td>${C_LIB[r.C.statut]}${r.C.bloqueMotif?", "+r.C.bloqueMotif:""}</td></tr>
+        <tr><td>Risque résiduel R</td><td class="num">${f1(r.C.R)}, ${r.C.R<25?"faible sous contrôles":r.C.R<50?"modéré":r.C.R<70?"élevé":"critique"}</td></tr>
+        <tr><td>Indice d'écart GapC</td><td class="num">${f1(r.C.GapC)}</td></tr>
+        <tr><td>Hypothèses conservatrices I=4, P=3, M=0</td><td>${r.C.hypotheses.join(", ")||"aucune"}</td></tr>
+        <tr><td>Contradictions U déclaré / objectivé</td><td>${r.U.contradictions.join(", ")||"aucune"}</td></tr>
+        <tr><td>Plafond V</td><td>${r.V.plafond||"aucun"}</td></tr>
+        <tr><td>Plafonds A</td><td>${r.A.regles.join("<br>")||"aucun"}</td></tr>
+        <tr><td>Statut de portefeuille</td><td><span class="p ${r.P==="P0"?"p-encre":r.P==="P4"?"p-hach":"p-violet"}">${r.P} ${P_LIB[r.P]}</span></td></tr>
+      </table>
+      <div class="encadre att" style="margin-top:14px">Le score ne vaut ni autorisation juridique, ni avis du DPO,
+        ni validation de sécurité, ni validation clinique. Le niveau maximal recommandé reste un pilote contrôlé.</div>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- vue 7 : portefeuilles ---------- */
+function vuePortefeuilles(){
+  const calc=S.scenarios.map(s=>({s,r:calcScenario(s)}));
+  const ordre=["P1","P3","P2","P5","P4","P6","P0"];
+  const groupes=ordre.map(p=>({p,items:calc.filter(x=>x.r.P===p)
+    .sort((x,y)=>y.r.O_Lc-x.r.O_Lc)})).filter(g=>g.items.length);
+  const bandes=[[60,100,"Latent fort"],[40,59.999,"Latent significatif"],[0,39.999,"Latent faible"]];
+  const cols=[[0,39.999,"Activabilité faible"],[40,59.999,"Activabilité moyenne"],[60,100,"Activabilité forte"]];
+  const cellText=[["Actif stratégique à débloquer","Chantier prioritaire de préparation","Candidat pilote à fort potentiel"],
+                  ["Incubation sélective","Opportunité à arbitrer","Gain rapide"],
+                  ["Veille ou valeur déjà captée","Réemploi opportuniste","Amélioration marginale seulement"]];
+  const gis=S.gisements.map(g=>({g,r:calcGisement(g)})).sort((x,y)=>y.r.Sg-x.r.Sg);
+  return `
+  <div class="titre"><div><h1>Portefeuilles</h1>
+    <small>Deux unités d'analyse distinctes : quels usages instruire, dans quels actifs investir.</small></div></div>
+
+  <div class="sect"><h2>Portefeuille des scénarios</h2>
+  <div class="sub">Groupé par statut, jamais par rang global. Un scénario bloqué ne peut pas paraître meilleur qu'un scénario admissible.
+    Tri interne : statut C, puis O<sub>Lc</sub>, puis O<sub>V</sub>, puis valeur patrimoniale, puis effort.</div>
+  ${groupes.map(gr=>`<div class="carte" style="margin-bottom:14px">
+    <div class="ligne" style="justify-content:space-between;align-items:baseline">
+      <h3>${P_LIB[gr.p]} <span class="tag">${gr.p} · ${gr.items.length}</span></h3>
+      <small>${P_DEC[gr.p]}</small></div>
+    <div class="scroll"><table style="margin-top:10px"><thead><tr><th>Scénario</th><th>Gisement</th>
+      <th class="n">L</th><th class="n">A</th><th class="n">V</th><th class="n">O<sub>Lc</sub></th>
+      <th>C</th><th>Confiance</th><th></th></tr></thead><tbody>
+      ${gr.items.map(({s,r})=>{const g=S.gisements.find(x=>x.id===s.gis);
+        return `<tr><td>${esc(s.titre)}<br><small class="mono-id">${s.id}</small></td>
+        <td><small>${g?esc(g.nom):""}</small></td>
+        <td class="n">${f1(r.L.dec)}</td><td class="n">${f1(r.A.dec)}</td><td class="n">${f1(r.V.dec)}</td>
+        <td class="n">${f1(r.O_Lc)}</td>
+        <td><span class="p ${r.C.statut==="ADMISSIBLE"?"p-teal":r.C.statut==="BLOQUE"?"p-encre":"p-hach"}">${C_LIB[r.C.statut]}</span></td>
+        <td><span class="p ${r.confLib==="Insuffisante"?"p-hach":r.confLib==="Élevée"?"p-teal":"p-gris"}">${r.confLib}</span></td>
+        <td><button class="btn mini sec" data-action="open-scn" data-id="${s.id}">Ouvrir</button></td></tr>`;}).join("")}
+    </tbody></table></div></div>`).join("")}
+  </div>
+
+  <div class="sect"><h2>Carte potentiel latent × activabilité</h2>
+  <div class="sub">Lecture après V et statut C. Les scénarios à instruire sont hachurés, les scénarios bloqués sont isolés hors carte.</div>
+  <div class="scroll"><table class="mat"><thead><tr><th style="width:150px"></th>
+    ${cols.map(c=>`<th>${c[2]}<br><span class="tag">de ${c[0]} à ${Math.round(c[1])}</span></th>`).join("")}</tr></thead><tbody>
+    ${bandes.map((b,bi)=>`<tr><th style="text-align:left">${b[2]}<br><span class="tag">de ${b[0]} à ${Math.round(b[1])}</span></th>
+      ${cols.map((cc,ci)=>{const items=calc.filter(x=>x.r.P!=="P0"&&x.r.L.dec>=b[0]&&x.r.L.dec<=b[1]&&x.r.A.dec>=cc[0]&&x.r.A.dec<=cc[1]);
+        return `<td><div class="tag" style="margin-bottom:6px">${cellText[bi][ci]}</div>
+          ${items.map(({s,r})=>`<span class="puce ${r.P==="P4"?"p-hach":r.C.statut==="ADMISSIBLE"?"p-teal":"p-violet"}">${s.id} · ${esc(s.titre.slice(0,42))}${s.titre.length>42?"…":""}</span>`).join("")}</td>`;}).join("")}
+    </tr>`).join("")}
+  </tbody></table></div>
+  ${calc.filter(x=>x.r.P==="P0").length?`<div class="encadre att" style="margin-top:12px">
+    Hors carte, statut bloqué : ${calc.filter(x=>x.r.P==="P0").map(x=>x.s.id+" "+esc(x.s.titre)).join(" ; ")}.
+    Le blocage relève d'une décision d'autorité compétente, pas d'un arbitrage de valeur.</div>`:""}
+  </div>
+
+  <div class="sect"><h2>Portefeuille des gisements</h2>
+  <div class="sub">Le patrimoine agrège les scénarios sans récompenser leur nombre. L*, Lev et Div restent des hypothèses expérimentales
+    à confronter au jugement des experts pendant les pilotes.</div>
+  <div class="carte scroll"><table><thead><tr><th>Gisement</th><th>Statut patrimonial</th>
+    <th class="n">S<sub>g</sub></th><th class="n">L*</th><th class="n">Pat</th><th class="n">Lev</th><th class="n">Div</th>
+    <th class="n">Conf<sub>g</sub></th><th class="n">U<sub>g</sub></th></tr></thead><tbody>
+    ${gis.map(({g,r})=>`<tr><td>${esc(g.nom)}<br><small class="mono-id">${g.id} · ${r.scs.length} scénario${r.scs.length>1?"s":""} · ${r.nf} famille${r.nf>1?"s":""} de valeur</small></td>
+      <td><span class="p ${r.statut==="Candidat à investissement"?"p-lime":r.statut==="Instruire le patrimoine"?"p-hach":"p-gris"}">${r.statut}</span></td>
+      <td class="n">${f1(r.Sg)}</td><td class="n">${f1(r.Lstar)}</td><td class="n">${f1(r.Pat)}</td>
+      <td class="n">${f1(r.Lev)}</td><td class="n">${f1(r.Div)}</td><td class="n">${f0(r.Confg)}</td><td class="n">${f1(r.Ug)}</td></tr>`).join("")}
+  </tbody></table></div>
+
+  <div class="carte" style="margin-top:16px"><h3>Chantiers communs</h3>
+    <div class="sub" style="margin:4px 0 10px">Chaque relation chantier → condition levée → scénario est explicitée et prouvée. Un scénario n'est compté qu'une fois par chantier.</div>
+    <ul class="liste-nette">${S.chantiers.map(w=>`<li><span>${esc(w.titre)}<br>
+      <small class="mono-id">${w.id} · lève une condition pour ${w.leve.join(", ")} · preuve E${w.preuve}</small></span></li>`).join("")}</ul></div>
+  </div>`;
+}
+
+/* ==========================================================================
+   6. INTERACTIONS
+   ========================================================================== */
+let vuePrec=null;
+function render(){
+  renderNav();
+  const v={edr:vueEDR,signaux:vueSignaux,gisements:vueGisements,q1:vueQ1,q2:vueQ2,
+           scenario:vueScenario,portefeuilles:vuePortefeuilles}[S.view];
+  const y=window.scrollY||0;
+  $("app").innerHTML=v();
+  if(S.view!==vuePrec){ window.scrollTo({top:0,behavior:"instant"}); vuePrec=S.view; }
+  else window.scrollTo({top:y,behavior:"instant"});
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.vue){ S.view=b.dataset.vue; return render(); }
+  if(b.dataset.tab){ S.tabQ=b.dataset.tab; return render(); }
+  if(b.dataset.cell){
+    const cur=S.campagne.cellules[b.dataset.cell];
+    S.campagne.cellules[b.dataset.cell]=CELL_ETATS[(CELL_ETATS.indexOf(cur)+1)%4];
+    return render();
+  }
+  const act=b.dataset.action, id=b.dataset.id;
+  if(act==="open-scn"){ S.scenarioCourant=id; S.view="scenario"; return render(); }
+  if(act==="toggle-profil"){
+    const sc=S.scenarios.find(x=>x.id===S.scenarioCourant);
+    const i=sc.profil.indexOf(id); i>=0?sc.profil.splice(i,1):sc.profil.push(id);
+    return render();
+  }
+  if(act==="add-signal"){
+    const nom=$("sn").value.trim(); if(!nom){ $("sn").focus(); return; }
+    const n=String(S.signaux.length+1).padStart(4,"0");
+    S.signaux.push({id:"SIG-"+n,nom,zone:$("sz").value,canal:$("sc").value,
+      auteur:"Contributeur connecté",wf:"SOUMIS",res:null,gis:null,motif:$("sm").value});
+    return render();
+  }
+  if(act==="dismiss-signal"){
+    const s=S.signaux.find(x=>x.id===id); s.wf="RESOLU"; s.res="ECARTE"; return render();
+  }
+  if(act==="confirm-signal"){
+    const s=S.signaux.find(x=>x.id===id); s.wf="RESOLU"; s.res="CONFIRME";
+    const n=String(S.gisements.length+1).padStart(4,"0"); const gid="GIS-"+n; s.gis=gid;
+    S.gisements.push({id:gid,nom:s.nom,famille:"À qualifier en Q1",
+      definition:"Description à compléter en Q1. Créé par confirmation du signal "+s.id+".",
+      sources:"À préciser",producteur:"À préciser",rmetier:"À identifier",rtech:"À identifier",
+      population:"À préciser",periode:"À préciser",modalites:"À préciser",granularite:"À préciser",
+      sensibilite:"À qualifier",usageInitial:"À préciser",contraintes:"À préciser",
+      zone:s.zone,prealable:"NON",passe:"PAS-"+S.campagne.passe,gouvernance:"A_IDENTIFIER",
+      ug:{UG01:a("ND",0),UG02:a("ND",0),UG03:a("ND",0),UG04:a("ND",0),UG05:a("ND",0)},V09preuve:0});
+    S.gisementCourant=gid; S.view="gisements"; return render();
+  }
+  if(act==="rejeter-sug"){ S.suggestions=S.suggestions.filter(x=>x.id!==id); return render(); }
+  if(act==="valider-sug"){
+    const sug=S.suggestions.find(x=>x.id===id); if(!sug) return;
+    const n=String(S.scenarios.length+1).padStart(4,"0"); const sid="SCN-"+n;
+    const vide=(ks)=>Object.fromEntries(ks.map(k=>[k,a("ND",0)]));
+    S.scenarios.push({id:sid,gis:sug.gis,stade:"SIGNALE",titre:sug.titre,
+      finalite:"À compléter lors de la validation",beneficiaire:"À compléter",decision:"À compléter",
+      resultat:"À compléter",population:"À compléter",horizon:"À compléter",
+      origine:"Validation humaine d'une suggestion",cIA:false,profil:["PERSONNEL_SANTE"],
+      u:Object.fromEntries(Object.keys(W.U).map(k=>[k,au("ND",0,null,null)])),
+      v:vide([...Object.keys(W.Vv),...Object.keys(W.Vc)]),
+      A:vide(Object.keys(W.A)),
+      c:Object.fromEntries(Object.keys(W.C).map(k=>[k,c("ND",0,null,null)])),
+      ia:{}});
+    S.suggestions=S.suggestions.filter(x=>x.id!==id);
+    S.scenarioCourant=sid; S.tabQ="U"; S.view="q2"; return render();
+  }
+});
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.dataset.action==="sel-gis"){ S.gisementCourant=t.value; return render(); }
+  if(t.dataset.action==="sel-scn"){ S.scenarioCourant=t.value; return render(); }
+  if(t.dataset.edit){
+    const [bloc,id,champ]=t.dataset.edit.split("|");
+    const sc=S.scenarios.find(x=>x.id===S.scenarioCourant);
+    const cible={U:sc.u,V:sc.v,A:sc.A,C:sc.c,IA:sc.ia}[bloc];
+    if(!cible[id]) cible[id]={v:"ND",e:0};
+    let val=t.value;
+    if(val!=="ND"&&val!=="NA") val=Number(val);
+    if(champ==="e"||champ==="I"||champ==="P") cible[id][champ]=(val==="ND"?null:Number(val));
+    else if(champ==="d"||champ==="o") cible[id][champ]=(val==="ND"||val==="NA")?null:val;
+    else cible[id].v=val;
+    return render();
+  }
+});
+render();
+</script>
