@@ -7,8 +7,8 @@
 <meta name="description" content="Démonstrateur du moteur de recensement et de qualification des gisements de données sanitaires et médico-sociales. Données fictives, aucun contenu patient.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="light">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -17,10 +17,12 @@
     <div class="marque">Moteur unifié <span>de recensement et de qualification des gisements de données</span></div>
     <div class="ver">Réf. V1.2.2, procédure EDR V1.0, MPD V1.1.5</div>
   </div>
-  <nav class="spine" id="nav" aria-label="Étapes de la chaîne"></nav>
+  <nav class="spine" id="nav" aria-label="Étapes de la chaîne" hidden></nav>
 </header>
 
-<div class="bandeau"><div id="bandeau"></div></div>
+<div class="barre" id="barre" hidden></div>
+
+<div class="bandeau" hidden><div id="bandeau"></div></div>
 
 <main class="wrap" id="app">
   <noscript>
@@ -30,14 +32,16 @@
 </main>
 
 <footer class="wrap">
-  Ce prototype fonctionne hors ligne et sans serveur. Rien de ce que vous saisissez n'est transmis ni conservé.
+  Ce prototype fonctionne hors ligne et sans serveur. Votre travail est enregistré dans ce navigateur, sur ce poste, et n'est jamais transmis.
   Les données de démonstration sont fictives : aucun contenu patient, aucune donnée réelle d'établissement.
   Les poids, seuils et formules reproduisent le référentiel V1.2.2 et la spécification fonctionnelle V1.2.2.
   Ils restent des hypothèses à calibrer sur les pilotes.
 </footer>
 
-<script src="assets/moteur.js"></script>
-<script src="assets/donnees-demo.js"></script>
-<script src="assets/interface.js"></script>
+<script src="moteur.js"></script>
+<script src="ancres.js"></script>
+<script src="cas.js"></script>
+<script src="persistance.js"></script>
+<script src="interface.js"></script>
 </body>
 </html>

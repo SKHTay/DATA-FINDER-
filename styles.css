@@ -140,3 +140,43 @@ footer{border-top:1px solid var(--trait);margin-top:48px;padding:20px 0;font-siz
   h1{font-size:23px}.kpi .v{font-size:23px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+
+/* ------- barre d'espace de travail ------- */
+.barre{background:var(--papier);border-bottom:1px solid var(--trait)}
+.barre-in{max-width:1180px;margin:0 auto;padding:10px 24px;display:flex;gap:12px;
+  flex-wrap:wrap;justify-content:space-between;align-items:center}
+#nomEspace{font-weight:500}
+
+/* ------- aides à la cotation ------- */
+details.ancres{margin-top:10px}
+details.ancres summary{cursor:pointer;color:var(--violet);font-size:13px;list-style:none}
+details.ancres summary::-webkit-details-marker{display:none}
+details.ancres summary::before{content:"Ancres ";position:absolute;left:-9999px}
+details.ancres summary::after{content:" ▾"}
+details.ancres[open] summary::after{content:" ▴"}
+details.ancres table{margin-top:6px;background:#FAF6EE;border:1px solid var(--trait);border-radius:var(--r);font-size:13px}
+details.ancres td{padding:5px 9px;border-bottom:1px solid #EFE9DE}
+details.ancres tr:last-child td{border-bottom:0}
+details.ancres tr.active{background:var(--lime-pale)}
+td.niv{width:34px;text-align:center;color:var(--gris);font-variant-numeric:tabular-nums;vertical-align:top}
+details.rappel{margin-bottom:16px}
+details.rappel summary{cursor:pointer;font-weight:500}
+details.rappel table{font-size:13px}
+details.rappel td{padding:5px 8px}
+input[type=file]{font-size:13px;border:1px dashed var(--trait);padding:8px;border-radius:var(--r);background:var(--papier);width:auto}
+ol{line-height:1.5}
+
+/* ------- impression ------- */
+@media print{
+  header.top,.bandeau,.barre,.tabs,footer{display:none!important}
+  button{display:none!important}
+  body{background:#fff;font-size:11pt}
+  .wrap{max-width:none;padding:0}
+  .carte,.kpi{border-color:#bbb;break-inside:avoid;page-break-inside:avoid}
+  .sect{break-inside:auto}
+  input,select,textarea{border:0!important;padding:0!important;background:transparent!important;
+    -webkit-appearance:none;appearance:none;color:#000}
+  label.champ{color:#555}
+  .p{border:1px solid #999}
+}

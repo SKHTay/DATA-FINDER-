@@ -1,0 +1,3 @@
+# Démonstrateur méthodologique, non destiné à l'indexation.
+User-agent: *
+Disallow: /
