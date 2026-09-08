@@ -1113,7 +1113,7 @@ function prioActions(){
    10. MÉTHODE ET FORMATION
    ========================================================================== */
 function vueMethode(){
-  return `<button class="retour" data-aller='{"section":"apercu"}'>← Vue d'ensemble</button>
+  return `<button class="retour" data-aller='{"section":"apercu"}'>← ${P.actif?"Vue d'ensemble":"Accueil"}</button>
   <div class="tete"><div class="t"><h1>Méthode et référentiel</h1>
     <p>Data Finder applique un référentiel de qualification. Le vocabulaire interne reste disponible ici.</p></div></div>
   <div class="carte"><h3>Documents de référence</h3>
@@ -1336,7 +1336,10 @@ let vuePrec=null;
 function render(){
   renderEnTete(); renderNavigation();
   document.querySelector(".coque").classList.toggle("pleine",!P.actif);
-  if(!P.actif){ $("app").innerHTML=vueEspaces(); vuePrec="espaces"; return; }
+  if(!P.actif){
+    $("app").innerHTML = pageGlobale==="methode" ? vueMethode() : vueEspaces();
+    if(vuePrec!=="globale|"+pageGlobale){ window.scrollTo({top:0,behavior:"instant"}); }
+    vuePrec="globale|"+pageGlobale; return; }
   normaliser(); surveillerStatuts();
   const v={apercu:vueApercu,explorer:vueExplorer,actifs:vueActifs,usages:vueUsages,
            priorites:vuePriorites,methode:vueMethode,formation:vueFormation}[S.nav.section]||vueApercu;
@@ -1350,7 +1353,11 @@ function render(){
 /* ==========================================================================
    13. INTERACTIONS
    ========================================================================== */
-function aller(o){ Object.assign(S.nav,o); enregistrerBientot(); render(); }
+let pageGlobale=null;   // page consultable avant l'ouverture d'un espace
+function aller(o){
+  if(!P.actif){ pageGlobale=(o.section==="methode")?"methode":null; return render(); }
+  Object.assign(S.nav,o); enregistrerBientot(); render();
+}
 function fermerMenus(sauf){
   document.querySelectorAll("details.menu[open]").forEach(d=>{ if(d!==sauf) d.open=false; });
   document.querySelectorAll("details.cellule[open]").forEach(d=>{ if(d!==sauf) d.open=false; });
@@ -1376,14 +1383,14 @@ document.addEventListener("click",e=>{
     enregistrerBientot(); return render(); }
 
   /* espaces */
-  if(act==="creer-espace"){ const nid=creerEspace(id); ouvrirEspace(nid); normaliser();
+  if(act==="creer-espace"){ pageGlobale=null; const nid=creerEspace(id); ouvrirEspace(nid); normaliser();
     journal("Espace ouvert à partir du "+CAS[id].nom.toLowerCase()); enregistrerMaintenant(); return render(); }
-  if(act==="ouvrir-espace"){ ouvrirEspace(id); normaliser(); return render(); }
+  if(act==="ouvrir-espace"){ pageGlobale=null; ouvrirEspace(id); normaliser(); return render(); }
   if(act==="dupliquer-espace"){ dupliquerEspace(id); return render(); }
   if(act==="supprimer-espace"){
     if(confirm("Supprimer cet espace et tout son contenu ? Cette action est définitive.")){
       supprimerEspace(id); return render(); } return; }
-  if(act==="voir-espaces"){ enregistrerMaintenant(); fermerEspace(); return render(); }
+  if(act==="voir-espaces"){ enregistrerMaintenant(); fermerEspace(); pageGlobale=null; return render(); }
   if(act==="importer"){
     const f=$("fichierImport").files[0]; const msg=$("messageImport");
     if(!f){ msg.innerHTML='<span class="p p-hach">Choisissez d\'abord un fichier.</span>'; return; }
