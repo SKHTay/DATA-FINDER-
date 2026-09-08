@@ -64,7 +64,7 @@ et passer de l'un à l'autre.
 
 ## Mettre en ligne sur GitHub Pages
 
-1. Déposez les douze fichiers à la racine du dépôt, sans créer de sous-dossier.
+1. Déposez les treize fichiers à la racine du dépôt, sans créer de sous-dossier.
 2. Poussez sur la branche `main`.
 3. Dans Settings, Pages, choisissez la source **Deploy from a branch**, branche `main`, dossier `/ (root)`.
 
@@ -78,6 +78,7 @@ le navigateur distingue les deux origines.
 
 ```
 index.html          coque applicative et ordre de chargement
+logo-cius.svg       logo affiché sur la page d'accueil et en pied de page
 styles.css          système visuel, jetons, composants, responsive, impression
 moteur.js           poids, formules du référentiel, indicateurs de couverture
 ancres.js           repères de niveau et éléments de preuve, repris du référentiel
@@ -90,6 +91,10 @@ robots.txt
 README.md
 GUIDE-FORMATEUR.md
 ```
+
+`logo-cius.svg` est un fichier de remplacement. Écrasez-le par le logo officiel, au format SVG,
+en conservant le nom du fichier. Il est appelé à deux endroits, la page d'accueil et le pied de page,
+avec une hauteur de 34 et 30 pixels. Aucune autre modification n'est nécessaire.
 
 Trois couches séparées. Le moteur ignore le langage produit. Le langage produit ignore le rendu.
 Le rendu n'invente aucune règle de calcul. Cette séparation permet de faire évoluer le
@@ -170,4 +175,4 @@ et version à figer avant chaque session pour que les résultats montrés resten
 | Spécification fonctionnelle et logique | 1.2.2 du 22 août 2026 |
 | Modèle physique de données | 1.1.5 |
 | Guide UX et langage produit | 1.0 |
-| Data Finder | 0.3 |
+| Data Finder | 0.4 |

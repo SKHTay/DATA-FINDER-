@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" role="img" aria-label="CIUS, Centre d'Innovation et d'Usages en Santé">
+  <!-- Fichier de remplacement. Écrasez-le par le logo officiel du CIUS,
+       au format SVG, en conservant le nom logo-cius.svg. -->
+  <g fill="none" stroke-width="6" stroke-linecap="round">
+    <path d="M10 40V24" stroke="#5C3EC2"/>
+    <path d="M22 40V16" stroke="#4EC9B0"/>
+    <path d="M34 40V10" stroke="#B8E04A"/>
+  </g>
+  <text x="50" y="30" font-family="Inter, Helvetica, Arial, sans-serif" font-size="23"
+        font-weight="600" letter-spacing="1.5" fill="#1E222B">CIUS</text>
+  <text x="50" y="46" font-family="Inter, Helvetica, Arial, sans-serif" font-size="10.5"
+        fill="#63677A">Centre d'Innovation et d'Usages en Santé</text>
+</svg>

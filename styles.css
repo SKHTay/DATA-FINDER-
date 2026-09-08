@@ -42,6 +42,8 @@ header.app{background:var(--papier);border-bottom:1px solid var(--trait);positio
 
 .coque{max-width:1320px;margin:0 auto;padding:0 22px;display:grid;grid-template-columns:216px 1fr;
   gap:28px;align-items:start}
+.coque.pleine{grid-template-columns:minmax(0,1fr);max-width:1120px}
+.coque.pleine>main{padding-top:0}
 nav.rail{position:sticky;top:76px;padding:18px 0 40px}
 nav.rail button{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:9px 12px;
   border:0;background:none;border-radius:var(--rb);color:var(--gris);text-align:left;font-size:15px}
@@ -131,7 +133,9 @@ main{padding:26px 0 96px;min-width:0}
 /* ================= listes ================= */
 .liste{list-style:none;padding:0;margin:0}
 .liste li{display:flex;gap:12px;align-items:center;justify-content:space-between;min-height:52px;
-  padding:10px 0;border-bottom:1px solid #EEE8DC}
+  padding:10px 0;border-bottom:1px solid #EEE8DC;flex-wrap:wrap}
+.liste .principal{flex:1 1 220px}
+.liste .actions{flex:0 0 auto}
 .liste li:last-child{border-bottom:0}
 .liste .principal{min-width:0}
 .liste .principal b{font-weight:500;display:block}
@@ -298,6 +302,7 @@ nav.bas{display:none}
 @media (max-width:900px){
   .coque{grid-template-columns:1fr;padding:0 16px;gap:0}
   nav.rail{display:none}
+  nav.bas[hidden]{display:none}
   nav.bas{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--papier);
     border-top:1px solid var(--trait);z-index:50;padding:4px 2px env(safe-area-inset-bottom)}
   nav.bas button{flex:1 1 0;min-height:56px;border:0;background:none;display:flex;flex-direction:column;
@@ -337,4 +342,54 @@ nav.bas{display:none}
     -webkit-appearance:none;appearance:none;color:#000;min-height:0}
   details.avance{display:none}
   .p{border:1px solid #999}
+}
+
+
+/* ================= page d'accueil ================= */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;align-items:center;
+  padding:52px 0 44px;border-bottom:1px solid var(--trait)}
+.hero-txt{min-width:0}
+.signature{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.signature img{display:block;height:34px;width:auto}
+.signature span{font-size:13px;color:var(--gris);border-left:1px solid var(--trait);padding-left:12px}
+.hero h1{font-size:46px;line-height:1.05;letter-spacing:-.025em;margin-bottom:14px}
+.hero .accroche{font-size:21px;line-height:1.4;max-width:22ch;margin-bottom:12px}
+.hero .sous{color:var(--gris);max-width:56ch;font-size:15.5px}
+.hero .actions{margin-top:26px}
+.hero .mention{margin-top:18px;font-size:13px;color:var(--gris)}
+.hero-vis{display:flex;flex-direction:column;gap:12px;min-width:0}
+.vis-carte{background:var(--papier);border:1px solid var(--trait);border-radius:var(--rc);padding:14px 16px}
+.vis-carte span{display:block;font-size:12px;color:var(--gris);margin-bottom:3px}
+.vis-carte b{font-weight:500;font-size:15px}
+.vis-carte.v1{margin-right:38px;border-left:3px solid var(--violet)}
+.vis-carte.v2{margin-left:22px;margin-right:16px;border-left:3px solid var(--teal)}
+.vis-carte.v3{margin-left:44px;border-left:3px solid var(--lime)}
+
+.carte.objectif .ico{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+  border-radius:10px;background:var(--violet-pale);color:var(--violet);margin-bottom:12px}
+.carte.objectif .ico svg{stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.carte.objectif p{color:var(--gris);font-size:14px;margin:8px 0 0}
+.carte.depart{display:flex;flex-direction:column}
+.carte.depart p{color:var(--gris);font-size:14px;margin:10px 0 18px;flex:1 1 auto}
+.carte.depart .btn{align-self:flex-start}
+.carte.limites p{color:var(--gris);font-size:14.5px;max-width:82ch}
+.carte.limites p:last-child{margin-bottom:0}
+
+ol.etapes{list-style:none;padding:0;margin:0;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+ol.etapes li{display:flex;gap:12px;align-items:flex-start;background:var(--papier);
+  border:1px solid var(--trait);border-radius:var(--rc);padding:16px}
+ol.etapes .num{flex:0 0 26px;height:26px;border-radius:50%;background:var(--encre);color:var(--creme);
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-variant-numeric:tabular-nums}
+ol.etapes b{font-weight:500;display:block}
+ol.etapes p{color:var(--gris);font-size:13.5px;margin:4px 0 0}
+
+@media (max-width:900px){
+  .coque.pleine{padding:0 16px}
+  .hero{grid-template-columns:1fr;gap:26px;padding:32px 0 30px}
+  .hero h1{font-size:34px}
+  .hero .accroche{font-size:18px;max-width:none}
+  .hero-vis{display:none}
+  .signature{flex-wrap:wrap}
+  .hero .actions .btn{flex:1 1 auto}
 }

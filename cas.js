@@ -9,18 +9,18 @@
 
 const CAS = {
   hopital: {
-    nom: "Cas hôpital, établissement pilote H1",
-    resume: "Campagne avancée sur quatre unités, cinq gisements et cinq scénarios déjà cotés. Sert aux exercices de lecture et de cotation.",
+    nom: "Hôpital, établissement pilote H1",
+    resume: "Une exploration déjà avancée : quatre services, cinq actifs de données et cinq cas d'usage évalués. Pour apprendre à lire un résultat et à arbitrer.",
     creer: casHopital
   },
   msp: {
-    nom: "Cas maison de santé, MSP M1",
-    resume: "Campagne légère sans direction des systèmes d'information, trois signaux et un scénario à peine ouvert. Sert aux exercices de recensement.",
+    nom: "Maison de santé, MSP M1",
+    resume: "Une exploration qui démarre, sans direction des systèmes d'information : trois pistes et aucun cas d'usage. Pour apprendre à recenser dans un environnement peu outillé.",
     creer: casMSP
   },
   vierge: {
-    nom: "Espace vierge",
-    resume: "Aucune campagne, aucun gisement. Sert à cadrer un périmètre de bout en bout.",
+    nom: "Partir de zéro",
+    resume: "Aucune exploration, aucun actif. Pour cadrer votre propre périmètre de bout en bout et travailler sur votre organisation.",
     creer: casVierge
   }
 };

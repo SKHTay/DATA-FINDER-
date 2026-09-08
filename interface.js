@@ -197,23 +197,81 @@ function statPastille(ton,texte){
    ========================================================================== */
 function vueEspaces(){
   const liste=indexEspaces();
+  const objectifs=[
+    ["Recenser ce que vous avez",
+     "Faites remonter les ensembles de données que personne n'inventorie : fichiers tenus par un service, systèmes anciens, documents jamais réexploités.",
+     "M4 6h16M4 12h16M4 18h10"],
+    ["Identifier de nouveaux usages",
+     "Associez un usage concret à chaque actif, et mesurez ce qui reste réellement à exploiter une fois déduit ce qui est déjà fait.",
+     "M12 3v18M3 12h18"],
+    ["Décider où agir",
+     "Comparez les usages selon leur potentiel, leur faisabilité et leurs prérequis, avant d'engager du temps et des moyens.",
+     "M6 20V10M12 20V4M18 20v-7"]
+  ];
+  const etapes=[
+    ["Explorer","Définissez où chercher et vérifiez que chaque partie importante du périmètre a été examinée."],
+    ["Recenser","Transformez les pistes repérées en actifs de données décrits, avec un responsable identifié."],
+    ["Évaluer","Répondez aux questions de chaque dimension et indiquez sur quoi repose votre réponse."],
+    ["Prioriser","Obtenez une recommandation lisible et les freins précis à lever pour avancer."]
+  ];
   return `
-  <div class="tete"><div class="t"><h1>${esc(PRODUIT.nom)}</h1>
-    <p>${esc(PRODUIT.accroche)} ${esc(PRODUIT.sous)}</p></div></div>
+  <section class="hero">
+    <div class="hero-txt">
+      <div class="signature"><img src="logo-cius.svg" alt="CIUS" height="34"><span>Une plateforme du CIUS</span></div>
+      <h1>${esc(PRODUIT.nom)}</h1>
+      <p class="accroche">${esc(PRODUIT.accroche)}</p>
+      <p class="sous">${esc(PRODUIT.sous)}</p>
+      <div class="actions">
+        <button class="btn" data-action="aller-commencer">Commencer</button>
+        <button class="btn neutre" data-aller='{"section":"methode"}'>Voir la méthode</button>
+      </div>
+      <p class="mention">Vos données restent sur ce poste. Aucun envoi, aucun compte à créer.</p>
+    </div>
+    <div class="hero-vis" aria-hidden="true">
+      <div class="vis-carte v1"><span>Piste repérée</span><b>Tableur de suivi des sorties</b></div>
+      <div class="vis-carte v2"><span>Actif de données</span><b>Comptes rendus d'hospitalisation</b></div>
+      <div class="vis-carte v3"><span>Cas d'usage</span><b>Prêt à cadrer un pilote</b></div>
+    </div>
+  </section>
+
+  <section class="bloc"><h2>À quoi sert Data Finder</h2>
+  <div class="sub">Beaucoup d'organisations de santé disposent de données qu'elles n'exploitent pas,
+    faute de savoir qu'elles existent, à qui elles appartiennent et ce qu'elles permettraient.
+    Data Finder répond à ces trois questions dans l'ordre.</div>
+  <div class="grille g3">${objectifs.map(([t,d,ic])=>`<div class="carte objectif">
+    <span class="ico">${icone(ic)}</span><h3>${esc(t)}</h3>
+    <p>${esc(d)}</p></div>`).join("")}</div></section>
+
+  <section class="bloc"><h2>Comment cela se passe</h2>
+  <div class="sub">Quatre temps, dans cet ordre. Chaque écran indique la prochaine action utile.</div>
+  <ol class="etapes">${etapes.map(([t,d],i)=>`<li><span class="num">${i+1}</span>
+    <div><b>${esc(t)}</b><p>${esc(d)}</p></div></li>`).join("")}</ol></section>
+
+  <section class="bloc"><h2>Ce que Data Finder ne fait pas</h2>
+  <div class="carte limites">
+    <p>La plateforme ne se connecte à aucun système d'information et ne copie aucun contenu patient.
+      Elle travaille à partir de ce que les équipes déclarent, pas à partir d'un scan technique.</p>
+    <p>Elle ne produit aucune décision opposable. Un résultat ne remplace ni l'avis du délégué à la protection
+      des données, ni la validation de sécurité, ni la validation clinique. L'étape maximale qu'elle recommande
+      est un pilote encadré.</p>
+  </div></section>
+
   ${!P.disponible?`<div class="suite blocage"><div class="txt"><b>Enregistrement indisponible</b>
     <small>Le navigateur bloque le stockage local, probablement en navigation privée.
     Vous pouvez travailler, mais exportez une copie avant de fermer l'onglet.</small></div></div>`:""}
 
-  <div class="bloc"><h2>Commencer</h2>
-  <div class="sub">Choisissez le point de départ qui correspond à votre situation.</div>
-  <div class="grille g3">${Object.entries(CAS).map(([cle,cas])=>`<div class="carte">
-    <h3>${esc(cas.nom)}</h3><p style="margin:8px 0 16px;color:var(--gris);font-size:14px">${esc(cas.resume)}</p>
-    <button class="btn" data-action="creer-espace" data-id="${cle}">Ouvrir</button></div>`).join("")}</div></div>
+  <section class="bloc" id="commencer"><h2>Commencer</h2>
+  <div class="sub">Choisissez le point de départ qui correspond à votre situation.
+    Les deux premiers reposent sur des données d'exemple entièrement fictives.</div>
+  <div class="grille g3">${Object.entries(CAS).map(([cle,cas])=>`<div class="carte depart">
+    <h3>${esc(cas.nom)}</h3><p>${esc(cas.resume)}</p>
+    <button class="btn" data-action="creer-espace" data-id="${cle}">Ouvrir</button></div>`).join("")}</div></section>
 
-  <div class="bloc"><h2>Reprendre</h2>
-  ${liste.length?`<div class="carte"><ul class="liste">${liste.map(m=>`<li>
+  ${liste.length?`<section class="bloc"><h2>Reprendre votre travail</h2>
+  <div class="sub">Ces espaces sont enregistrés dans ce navigateur, sur ce poste.</div>
+  <div class="carte"><ul class="liste">${liste.map(m=>`<li>
       <span class="principal"><b>${esc(m.nom)}</b>
-        <small>${esc(CAS[m.cas]?CAS[m.cas].nom:m.cas)}, modifié le ${dateCourte(m.modifie)}</small></span>
+        <small>Modifié le ${dateCourte(m.modifie)}</small></span>
       <span class="actions">
         <button class="btn petit" data-action="ouvrir-espace" data-id="${m.id}">Ouvrir</button>
         <details class="menu"><summary aria-label="Autres actions">•••</summary>
@@ -221,16 +279,14 @@ function vueEspaces(){
             <button data-action="dupliquer-espace" data-id="${m.id}">Dupliquer</button>
             <button class="danger" data-action="supprimer-espace" data-id="${m.id}">Supprimer</button>
           </div></details>
-      </span></li>`).join("")}</ul></div>`
-    :etatVide("Aucun espace enregistré","Les espaces que vous ouvrirez seront conservés dans ce navigateur.","")}
-  </div>
+      </span></li>`).join("")}</ul></div></section>`:""}
 
-  <div class="bloc"><h2>Reprendre une sauvegarde</h2>
+  <section class="bloc"><h2>Reprendre une sauvegarde</h2>
   <div class="sub">Chargez un fichier exporté depuis un autre poste ou lors d'une séance précédente.</div>
   <div class="carte"><div class="actions">
     <input type="file" id="fichierImport" accept="application/json,.json">
     <button class="btn sec" data-action="importer">Charger</button></div>
-    <div id="messageImport" style="margin-top:12px"></div></div></div>`;
+    <div id="messageImport" style="margin-top:12px"></div></div></section>`;
 }
 
 /* ==========================================================================
@@ -1279,6 +1335,7 @@ function majBarre(){
 let vuePrec=null;
 function render(){
   renderEnTete(); renderNavigation();
+  document.querySelector(".coque").classList.toggle("pleine",!P.actif);
   if(!P.actif){ $("app").innerHTML=vueEspaces(); vuePrec="espaces"; return; }
   normaliser(); surveillerStatuts();
   const v={apercu:vueApercu,explorer:vueExplorer,actifs:vueActifs,usages:vueUsages,
@@ -1336,6 +1393,8 @@ document.addEventListener("click",e=>{
       else msg.innerHTML='<span class="p p-hach">'+esc(r.message)+'</span>'; };
     lecteur.readAsText(f); return;
   }
+  if(act==="aller-commencer"){ const c=$("commencer");
+    if(c) c.scrollIntoView({behavior:"smooth",block:"start"}); return; }
   if(act==="imprimer"){ fermerMenus(); window.print(); return; }
   if(act==="exporter-json"){ fermerMenus(); exporterEspace(); return; }
   if(act==="exporter-rapport"){ fermerMenus();
