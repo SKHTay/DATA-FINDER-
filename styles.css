@@ -1,182 +1,340 @@
-/* Feuille de style, système visuel CIUS.
+/* styles.css, système visuel Data Finder
    Fond crème dominant, accents violet, lime et turquoise.
-   Les statuts défavorables utilisent l'encre et une trame hachurée, jamais le rouge. */
+   Une couleur porte une seule signification : violet action, turquoise validé,
+   lime potentiel, encre blocage, trame hachurée incertitude, gris historique.
+   Aucun état n'est transmis par la couleur seule, un libellé texte l'accompagne toujours.
+*/
 
 :root{
-  --creme:#F5F0E8; --papier:#FFFDF9; --encre:#1E222B; --gris:#6C7080; --trait:#DCD5C8;
+  --creme:#F5F0E8; --papier:#FFFDF9; --encre:#1E222B; --gris:#63677A; --trait:#DDD6C9;
   --violet:#5C3EC2; --lime:#B8E04A; --teal:#4EC9B0;
-  --violet-pale:#EDE8FB; --lime-pale:#F1F8DC; --teal-pale:#E2F6F1;
-  --r:3px;
+  --violet-pale:#EDE8FB; --lime-pale:#F1F8DC; --teal-pale:#E2F6F1; --sable:#F1ECE2;
+  --rc:14px; --rb:11px;
   --f:"Inter","Söhne",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{background:var(--creme);color:var(--encre);font-family:var(--f);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
-.num{font-variant-numeric:tabular-nums}
+body{background:var(--creme);color:var(--encre);font-family:var(--f);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased}
 h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.01em}
-h1{font-size:27px;line-height:1.2}
-h2{font-size:21px;line-height:1.25}
+h1{font-size:26px;line-height:1.2}
+h2{font-size:20px}
 h3{font-size:17px}
 h4{font-size:15px}
 p{margin:0 0 12px}
 a{color:var(--violet)}
-button{font-family:inherit;font-size:inherit;cursor:pointer}
+.num{font-variant-numeric:tabular-nums}
 small{font-size:13px;color:var(--gris)}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--violet);outline-offset:2px;border-radius:4px}
 
-/* ------- ossature ------- */
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
-header.top{border-bottom:1px solid var(--trait);background:var(--papier)}
-.top-in{max-width:1180px;margin:0 auto;padding:18px 24px 0;display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between}
-.marque{font-weight:600}
-.marque span{color:var(--gris);font-weight:400}
-.ver{font-size:13px;color:var(--gris)}
-nav.spine{max-width:1180px;margin:0 auto;padding:14px 24px 0;display:flex;gap:0;overflow-x:auto}
-nav.spine button{
-  border:0;background:none;padding:8px 16px 12px;color:var(--gris);white-space:nowrap;
-  border-bottom:2px solid transparent;font-size:14px}
-nav.spine button:hover{color:var(--encre)}
-nav.spine button[aria-current="true"]{color:var(--encre);border-bottom-color:var(--violet);font-weight:500}
-nav.spine .sep{align-self:center;color:var(--trait);padding:0 2px 4px}
+/* ================= ossature ================= */
+header.app{background:var(--papier);border-bottom:1px solid var(--trait);position:sticky;top:0;z-index:30}
+.app-in{max-width:1320px;margin:0 auto;padding:0 22px;height:60px;display:flex;align-items:center;gap:16px}
+.marque{font-weight:600;letter-spacing:-.02em;font-size:17px;display:flex;align-items:center;gap:9px}
+.marque svg{display:block}
+.app-in .droite{margin-left:auto;display:flex;align-items:center;gap:10px}
+.espace-nom{border:1px solid transparent;background:transparent;font:inherit;font-weight:500;
+  padding:6px 10px;border-radius:var(--rb);max-width:230px;color:var(--encre)}
+.espace-nom:hover{border-color:var(--trait);background:var(--creme)}
+.enr{font-size:13px;color:var(--gris);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.enr b{font-weight:500}
 
-.bandeau{background:var(--violet-pale);border-bottom:1px solid var(--trait);font-size:13px}
-.bandeau div{max-width:1180px;margin:0 auto;padding:8px 24px;color:#3E2C86}
+.coque{max-width:1320px;margin:0 auto;padding:0 22px;display:grid;grid-template-columns:216px 1fr;
+  gap:28px;align-items:start}
+nav.rail{position:sticky;top:76px;padding:18px 0 40px}
+nav.rail button{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:9px 12px;
+  border:0;background:none;border-radius:var(--rb);color:var(--gris);text-align:left;font-size:15px}
+nav.rail button:hover{background:var(--sable);color:var(--encre)}
+nav.rail button[aria-current="page"]{background:var(--violet-pale);color:#3A268F;font-weight:500}
+nav.rail svg{flex:0 0 18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+main{padding:26px 0 96px;min-width:0}
 
-.titre{padding:36px 0 8px;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:flex-end}
-.chapeau{max-width:70ch;color:var(--gris);margin-bottom:24px}
+/* ================= menu ••• ================= */
+.menu{position:relative}
+.menu>summary{list-style:none;width:44px;height:44px;border-radius:var(--rb);display:flex;
+  align-items:center;justify-content:center;cursor:pointer;color:var(--gris);font-size:19px;letter-spacing:1px}
+.menu>summary::-webkit-details-marker{display:none}
+.menu>summary:hover{background:var(--sable);color:var(--encre)}
+.menu-liste{position:absolute;right:0;top:50px;background:var(--papier);border:1px solid var(--trait);
+  border-radius:var(--rc);box-shadow:0 8px 28px rgba(30,34,43,.10);padding:6px;min-width:230px;z-index:40}
+.menu-liste button{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 12px;
+  border-radius:9px;min-height:40px;font-size:14px;color:var(--encre)}
+.menu-liste button:hover{background:var(--sable)}
+.menu-liste hr{border:0;border-top:1px solid var(--trait);margin:6px 4px}
+.menu-liste .danger{color:#7A2E22}
 
-/* ------- surfaces ------- */
-.carte{background:var(--papier);border:1px solid var(--trait);border-radius:var(--r);padding:20px}
-.grille{display:grid;gap:16px}
-.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
-.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.g4{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
-.kpi{background:var(--papier);border:1px solid var(--trait);border-radius:var(--r);padding:14px 16px}
-.kpi .v{font-size:27px;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
-.kpi .l{font-size:13px;color:var(--gris);margin-top:2px}
-.kpi .d{font-size:12px;color:var(--gris);margin-top:6px;font-variant-numeric:tabular-nums}
-.kpi.na .v{color:var(--trait)}
+/* ================= titres de page ================= */
+.tete{margin-bottom:22px;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.tete .t{flex:1 1 340px;min-width:0}
+.tete p{margin:6px 0 0;color:var(--gris);max-width:74ch;font-size:14px}
+.retour{border:0;background:none;color:var(--gris);padding:6px 0;font-size:14px;margin-bottom:6px}
+.retour:hover{color:var(--encre)}
 
-/* ------- tableaux ------- */
-table{width:100%;border-collapse:collapse;font-size:14px}
-th{text-align:left;font-weight:500;color:var(--gris);font-size:13px;padding:8px 10px;border-bottom:1px solid var(--trait);vertical-align:bottom}
-td{padding:9px 10px;border-bottom:1px solid #EFE9DE;vertical-align:top}
-tr:last-child td{border-bottom:0}
-td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
-.scroll{overflow-x:auto}
-
-/* ------- pastilles ------- */
-.p{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;line-height:1.5;border:1px solid transparent;white-space:nowrap}
-.p-violet{background:var(--violet-pale);color:#3E2C86;border-color:#D6CCF7}
-.p-lime{background:var(--lime-pale);color:#4A5C12;border-color:#DCEBA8}
-.p-teal{background:var(--teal-pale);color:#16584C;border-color:#BCE8DF}
-.p-gris{background:#F1ECE2;color:var(--gris);border-color:var(--trait)}
-.p-encre{background:var(--encre);color:var(--creme)}
-.p-hach{color:#3A3F4C;border-color:#C9C2B4;
-  background:repeating-linear-gradient(135deg,#F1ECE2,#F1ECE2 4px,#E2DACB 4px,#E2DACB 8px)}
-
-/* ------- contrôles ------- */
-.btn{border:1px solid var(--violet);background:var(--violet);color:#fff;padding:7px 14px;border-radius:var(--r);font-size:14px}
-.btn:hover{background:#4C31A8}
+/* ================= boutons ================= */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;
+  padding:10px 18px;border-radius:var(--rb);border:1px solid var(--violet);background:var(--violet);
+  color:#fff;font-size:15px;font-weight:500}
+.btn:hover{background:#4A31A4;border-color:#4A31A4}
 .btn.sec{background:transparent;color:var(--violet)}
 .btn.sec:hover{background:var(--violet-pale)}
-.btn.mini{padding:3px 9px;font-size:13px}
-.btn.gris{border-color:var(--trait);color:var(--gris);background:transparent}
-.btn.gris:hover{background:#F1ECE2;color:var(--encre)}
-select,input[type=text],textarea{
-  font-family:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--trait);
-  border-radius:var(--r);background:var(--papier);color:var(--encre);width:100%}
-select:focus,input:focus,textarea:focus,button:focus-visible{outline:2px solid var(--violet);outline-offset:1px}
-label.champ{display:block;font-size:13px;color:var(--gris);margin-bottom:4px}
-.ligne{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.btn.neutre{background:transparent;color:var(--encre);border-color:var(--trait)}
+.btn.neutre:hover{background:var(--sable)}
+.btn.petit{min-height:36px;padding:6px 12px;font-size:14px;font-weight:400}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
-/* ------- divers ------- */
-.jauge{height:6px;background:#EDE7DB;border-radius:999px;overflow:hidden;margin-top:8px}
+/* ================= surfaces ================= */
+.carte{background:var(--papier);border:1px solid var(--trait);border-radius:var(--rc);padding:20px}
+.carte+.carte{margin-top:14px}
+.grille{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.bloc{margin-top:30px}
+.bloc>h2{margin-bottom:4px}
+.bloc>.sub{color:var(--gris);font-size:14px;margin-bottom:14px;max-width:74ch}
+
+/* ================= chiffres ================= */
+.stat{background:var(--papier);border:1px solid var(--trait);border-radius:var(--rc);padding:16px 18px}
+.stat .l{font-size:13px;color:var(--gris)}
+.stat .q{font-size:19px;font-weight:600;margin:3px 0 1px}
+.stat .v{font-size:13px;color:var(--gris);font-variant-numeric:tabular-nums}
+.stat .v b{font-weight:500;color:var(--encre)}
+.jauge{height:6px;background:#EBE4D7;border-radius:999px;overflow:hidden;margin-top:10px}
 .jauge i{display:block;height:100%;background:var(--violet)}
 .jauge.lime i{background:var(--lime)}
 .jauge.teal i{background:var(--teal)}
-.liste-nette{list-style:none;padding:0;margin:0}
-.liste-nette li{padding:8px 0;border-bottom:1px solid #EFE9DE;display:flex;gap:10px;justify-content:space-between;align-items:baseline}
-.liste-nette li:last-child{border-bottom:0}
-.encadre{border-left:3px solid var(--violet);background:var(--violet-pale);padding:12px 16px;border-radius:0 var(--r) var(--r) 0;font-size:14px}
-.encadre.att{border-left-color:var(--encre);background:#F1ECE2}
-.sect{margin-top:32px}
-.sect>h2{margin-bottom:4px}
-.sect>.sub{color:var(--gris);font-size:14px;margin-bottom:16px;max-width:74ch}
-.tag{font-size:12px;color:var(--gris);font-variant-numeric:tabular-nums}
-.mono-id{font-variant-numeric:tabular-nums;font-size:13px;color:var(--gris)}
 
-/* grille angles morts */
-.am{border-collapse:separate;border-spacing:2px;font-size:12px}
-.am th{padding:4px 6px;font-size:12px;border:0}
-.am td{padding:0;border:0}
-.am button{width:100%;min-width:74px;border:1px solid var(--trait);border-radius:2px;padding:6px 4px;font-size:11px;background:var(--papier);color:var(--gris)}
-.am .s-ID{background:var(--teal-pale);border-color:#BCE8DF;color:#16584C}
-.am .s-AB{background:var(--lime-pale);border-color:#DCEBA8;color:#4A5C12}
-.am .s-NA{background:#F1ECE2;color:var(--gris)}
-.am .s-NC{background:repeating-linear-gradient(135deg,#FFFDF9,#FFFDF9 4px,#EDE7DB 4px,#EDE7DB 8px);color:#3A3F4C}
+/* ================= pastilles ================= */
+.p{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:12.5px;
+  border:1px solid transparent;white-space:nowrap;line-height:1.6}
+.p-violet{background:var(--violet-pale);color:#3A268F;border-color:#D6CCF7}
+.p-lime{background:var(--lime-pale);color:#465A0F;border-color:#DAE9A2}
+.p-teal{background:var(--teal-pale);color:#12564A;border-color:#BCE8DF}
+.p-gris{background:var(--sable);color:var(--gris);border-color:var(--trait)}
+.p-encre{background:var(--encre);color:var(--creme)}
+.p-hach{color:#3A3F4C;border-color:#C9C2B4;
+  background:repeating-linear-gradient(135deg,var(--sable),var(--sable) 4px,#E4DCCC 4px,#E4DCCC 8px)}
 
-/* matrice L x A */
-.mat{border-collapse:collapse;font-size:13px;width:100%}
-.mat th{border:1px solid var(--trait);padding:6px 8px;background:#F1ECE2;text-align:center}
-.mat td{border:1px solid var(--trait);padding:8px;height:78px;vertical-align:top}
-.mat .puce{display:block;margin-bottom:4px;font-size:12px;padding:2px 6px;border-radius:2px}
+/* ================= prochaine action ================= */
+.suite{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-radius:var(--rc);
+  border:1px solid var(--trait);background:var(--papier);margin-bottom:14px}
+.suite .txt{flex:1 1 260px;min-width:0}
+.suite .txt b{font-weight:500;display:block}
+.suite .txt small{display:block}
+.suite.attention{background:var(--violet-pale);border-color:#D6CCF7}
+.suite.blocage{background:var(--sable);border-color:#C9C2B4;
+  background:repeating-linear-gradient(135deg,var(--sable),var(--sable) 5px,#E4DCCC 5px,#E4DCCC 10px)}
+.suite.succes{background:var(--teal-pale);border-color:#BCE8DF}
 
-/* saisie qualif */
-.crit{border-bottom:1px solid #EFE9DE;padding:12px 0}
-.crit:last-child{border-bottom:0}
-.crit .hd{display:flex;gap:10px;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.crit .q{font-size:14px;color:var(--gris);max-width:78ch}
-.crit .ctl{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.crit .ctl>div{min-width:120px}
-.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px}
-.tabs button{border:1px solid var(--trait);background:var(--papier);color:var(--gris);padding:5px 12px;border-radius:var(--r);font-size:14px}
-.tabs button[aria-current="true"]{background:var(--encre);color:var(--creme);border-color:var(--encre)}
-.audit{font-size:13px}
-.audit table{font-size:13px}
-.audit td:first-child{color:var(--gris);width:42%}
-footer{border-top:1px solid var(--trait);margin-top:48px;padding:20px 0;font-size:13px;color:var(--gris)}
-@media (max-width:640px){
-  .wrap{padding:0 16px 64px}.top-in,nav.spine{padding-left:16px;padding-right:16px}
-  h1{font-size:23px}.kpi .v{font-size:23px}
+/* ================= listes ================= */
+.liste{list-style:none;padding:0;margin:0}
+.liste li{display:flex;gap:12px;align-items:center;justify-content:space-between;min-height:52px;
+  padding:10px 0;border-bottom:1px solid #EEE8DC}
+.liste li:last-child{border-bottom:0}
+.liste .principal{min-width:0}
+.liste .principal b{font-weight:500;display:block}
+
+/* ================= maître détail ================= */
+.md{display:grid;grid-template-columns:290px 1fr;gap:18px;align-items:start}
+.md .colonne{background:var(--papier);border:1px solid var(--trait);border-radius:var(--rc);
+  padding:10px;position:sticky;top:76px;max-height:calc(100vh - 100px);overflow:auto}
+.md .colonne .rech{width:100%;margin-bottom:8px}
+.md .colonne button.item{display:block;width:100%;text-align:left;border:0;background:none;
+  padding:10px 12px;border-radius:10px;min-height:52px;color:var(--encre);font-size:14px}
+.md .colonne button.item:hover{background:var(--sable)}
+.md .colonne button.item[aria-current="true"]{background:var(--violet-pale);color:#3A268F}
+.md .colonne button.item small{display:block}
+
+/* ================= onglets ================= */
+.onglets{display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid var(--trait);margin-bottom:18px}
+.onglets button{border:0;background:none;padding:10px 14px;min-height:44px;color:var(--gris);
+  border-bottom:2px solid transparent;font-size:14.5px}
+.onglets button:hover{color:var(--encre)}
+.onglets button[aria-current="true"]{color:var(--encre);border-bottom-color:var(--violet);font-weight:500}
+.onglets .compte{font-variant-numeric:tabular-nums;color:var(--gris);font-weight:400}
+
+/* ================= formulaires ================= */
+.question{margin-bottom:18px}
+.question>label,.question>.lab{display:block;font-size:15px;font-weight:500;margin-bottom:2px}
+.question .aide{font-size:13px;color:var(--gris);margin-bottom:7px}
+.question .code{font-size:11.5px;color:var(--gris);letter-spacing:.04em}
+input[type=text],textarea,select{font-family:inherit;font-size:15px;width:100%;min-height:46px;
+  padding:11px 12px;border:1px solid var(--trait);border-radius:var(--rb);background:var(--papier);color:var(--encre)}
+textarea{min-height:76px;line-height:1.5;resize:vertical}
+select{min-height:46px;padding:10px 12px}
+input[type=text]:hover,textarea:hover,select:hover{border-color:#C7BEAB}
+input[type=file]{font-size:14px;border:1px dashed var(--trait);padding:12px;border-radius:var(--rb);
+  background:var(--papier);width:auto;min-height:auto}
+fieldset{border:0;padding:0;margin:0}
+legend{padding:0}
+
+/* choix de niveau, section 23 du guide */
+.niveaux{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.niveaux button{min-height:44px;min-width:44px;padding:8px 12px;border:1px solid var(--trait);
+  background:var(--papier);border-radius:10px;color:var(--encre);font-variant-numeric:tabular-nums;font-size:15px}
+.niveaux button:hover{border-color:var(--violet);color:var(--violet)}
+.niveaux button.bord{min-width:auto;font-size:14px;color:var(--gris)}
+.niveaux button[aria-checked="true"]{background:var(--violet);border-color:var(--violet);color:#fff;font-weight:500}
+.niveaux button.bord[aria-checked="true"]{background:var(--encre);border-color:var(--encre);color:var(--creme)}
+.niveaux .sep{width:1px;background:var(--trait);margin:4px 4px}
+.repere{margin-top:9px;font-size:13.5px;color:var(--encre);background:var(--lime-pale);
+  border:1px solid #E4EFC4;border-radius:10px;padding:9px 12px}
+.repere b{font-weight:500}
+.repere.vide{background:var(--sable);border-color:var(--trait);color:var(--gris)}
+
+/* choix de preuve, section 25 du guide */
+.preuves{display:flex;flex-wrap:wrap;gap:6px}
+.preuves button{display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 13px;
+  border:1px solid var(--trait);background:var(--papier);border-radius:10px;color:var(--encre);font-size:14px}
+.preuves button:hover{border-color:var(--teal)}
+.preuves button[aria-checked="true"]{background:var(--teal-pale);border-color:var(--teal);color:#12564A;font-weight:500}
+.preuves .code{font-size:11.5px;color:var(--gris)}
+.preuves button[aria-checked="true"] .code{color:#12564A}
+.pastille-radio{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--trait);flex:0 0 14px}
+.preuves button[aria-checked="true"] .pastille-radio{border-color:var(--teal);background:var(--teal);
+  box-shadow:inset 0 0 0 3px var(--teal-pale)}
+
+.alerte{margin-top:10px;border:1px solid #C9C2B4;border-radius:10px;padding:11px 13px;background:var(--sable);font-size:13.5px}
+.alerte b{font-weight:500;display:block;margin-bottom:4px}
+.alerte table{margin-top:6px;font-size:13px}
+.alerte td{padding:2px 10px 2px 0}
+
+.critere{padding:20px 0;border-bottom:1px solid #EEE8DC}
+.critere:last-child{border-bottom:0}
+.critere .intitule{font-weight:500}
+.critere .demande{color:var(--gris);font-size:14px;margin:3px 0 12px;max-width:78ch}
+.critere .paire{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:6px}
+.critere .paire .lab{font-size:13px;color:var(--gris);margin-bottom:6px;display:block}
+
+/* niveau requis, section 27 du guide */
+.requis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;
+  background:var(--sable);border-radius:10px;padding:12px 14px;margin-top:10px}
+.requis div span{display:block;font-size:12.5px;color:var(--gris)}
+.requis div b{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
+.requis .cadenas{font-size:12px;color:var(--gris)}
+
+/* ================= divulgation ================= */
+details.avance{margin-top:14px;border-top:1px solid #EEE8DC;padding-top:12px}
+details.avance>summary{cursor:pointer;color:var(--violet);font-size:14px;list-style:none;min-height:32px;
+  display:flex;align-items:center;gap:6px}
+details.avance>summary::-webkit-details-marker{display:none}
+details.avance>summary::after{content:"›";font-size:17px;transition:transform .15s}
+details.avance[open]>summary::after{content:"›";transform:rotate(90deg)}
+details.avance .contenu{margin-top:12px;font-size:13.5px}
+details.avance table{width:100%;border-collapse:collapse;font-size:13px}
+details.avance td{padding:5px 8px;border-bottom:1px solid #EEE8DC;vertical-align:top}
+details.avance td:first-child{color:var(--gris);width:44%}
+.reperes-tous{margin-top:8px}
+.reperes-tous table{width:100%;border-collapse:collapse;background:var(--papier);border:1px solid var(--trait);
+  border-radius:10px;overflow:hidden;font-size:13px}
+.reperes-tous td{padding:6px 10px;border-bottom:1px solid #EEE8DC}
+.reperes-tous tr.actif{background:var(--lime-pale)}
+.reperes-tous td.n{width:36px;text-align:center;color:var(--gris);font-variant-numeric:tabular-nums}
+
+/* ================= tableaux ================= */
+table.donnees{width:100%;border-collapse:collapse;font-size:14px}
+table.donnees th{text-align:left;font-weight:500;color:var(--gris);font-size:13px;padding:8px 10px;
+  border-bottom:1px solid var(--trait)}
+table.donnees td{padding:11px 10px;border-bottom:1px solid #EEE8DC;vertical-align:top}
+table.donnees tr:last-child td{border-bottom:0}
+table.donnees .n{text-align:right;font-variant-numeric:tabular-nums}
+
+/* ================= couverture ================= */
+.couv{border-collapse:separate;border-spacing:3px;font-size:12.5px;width:100%}
+.couv th{padding:5px 7px;font-size:12.5px;font-weight:500;text-align:left;color:var(--gris)}
+.couv td{padding:0}
+.cellule{position:relative}
+.cellule>summary{list-style:none;min-height:44px;width:100%;min-width:96px;border:1px solid var(--trait);
+  border-radius:9px;padding:7px 8px;font-size:12.5px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;text-align:center;background:var(--papier);color:var(--gris)}
+.cellule>summary::-webkit-details-marker{display:none}
+.cellule.e-ID>summary{background:var(--teal-pale);border-color:#BCE8DF;color:#12564A}
+.cellule.e-AB>summary{background:var(--lime-pale);border-color:#DAE9A2;color:#465A0F}
+.cellule.e-NA>summary{background:var(--sable);color:var(--gris)}
+.cellule.e-NC>summary{color:#3A3F4C;border-color:#C9C2B4;
+  background:repeating-linear-gradient(135deg,var(--papier),var(--papier) 4px,#EDE6D8 4px,#EDE6D8 8px)}
+.cellule .choix{position:absolute;z-index:20;left:0;top:48px;background:var(--papier);border:1px solid var(--trait);
+  border-radius:12px;box-shadow:0 8px 24px rgba(30,34,43,.12);padding:5px;min-width:170px}
+.cellule .choix button{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 11px;
+  border-radius:8px;min-height:40px;font-size:13.5px;color:var(--encre)}
+.cellule .choix button:hover{background:var(--sable)}
+
+/* ================= états vides ================= */
+.vide{background:var(--papier);border:1px dashed var(--trait);border-radius:var(--rc);padding:34px 24px;text-align:center}
+.vide h3{margin-bottom:6px}
+.vide p{color:var(--gris);max-width:52ch;margin:0 auto 18px}
+.vide .actions{justify-content:center}
+
+/* ================= héros du résultat ================= */
+.heros{background:var(--papier);border:1px solid var(--trait);border-radius:var(--rc);padding:26px}
+.heros .statut{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin-bottom:10px;display:inline-block}
+.heros h2{font-size:24px;margin-bottom:8px}
+.heros p{color:var(--gris);max-width:64ch}
+
+/* ================= progression ================= */
+.progression{list-style:none;padding:0;margin:0}
+.progression li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #EEE8DC;
+  min-height:44px;align-items:center}
+.progression li:last-child{border-bottom:0}
+.progression button{border:0;background:none;color:var(--violet);padding:6px 8px;min-height:40px;
+  border-radius:8px;font-size:14px;text-align:left;flex:1 1 auto}
+.progression button:hover{background:var(--violet-pale)}
+
+.chrono{list-style:none;padding:0;margin:0;font-size:14px}
+.chrono li{padding:9px 0;border-bottom:1px solid #EEE8DC}
+.chrono li:last-child{border-bottom:0}
+.chrono .quand{font-size:12.5px;color:var(--gris);font-variant-numeric:tabular-nums}
+
+.scroll{overflow-x:auto}
+.tag{font-size:12.5px;color:var(--gris)}
+.mono{font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--gris)}
+footer.pied{border-top:1px solid var(--trait);margin-top:auto;padding:22px;font-size:13px;color:var(--gris)}
+footer.pied div{max-width:1320px;margin:0 auto;max-width:90ch}
+
+/* ================= mobile ================= */
+nav.bas{display:none}
+@media (max-width:900px){
+  .coque{grid-template-columns:1fr;padding:0 16px;gap:0}
+  nav.rail{display:none}
+  nav.bas{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--papier);
+    border-top:1px solid var(--trait);z-index:50;padding:4px 2px env(safe-area-inset-bottom)}
+  nav.bas button{flex:1 1 0;min-height:56px;border:0;background:none;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--gris);padding:4px 2px}
+  nav.bas button svg{stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  nav.bas button[aria-current="page"]{color:var(--violet)}
+  main{padding-bottom:104px}
+  .app-in{padding:0 16px}
+  .espace-nom{max-width:130px}
+  .md{grid-template-columns:1fr}
+  .md .colonne{position:static;max-height:none}
+  h1{font-size:22px}
+  .heros{padding:20px}
+  /* tableaux en cartes */
+  table.cartes,table.cartes tbody,table.cartes tr,table.cartes td{display:block;width:100%}
+  table.cartes thead{position:absolute;left:-9999px}
+  table.cartes tr{background:var(--papier);border:1px solid var(--trait);border-radius:var(--rc);
+    padding:12px 14px;margin-bottom:10px}
+  table.cartes td{border:0;padding:4px 0;display:flex;gap:12px;justify-content:space-between;text-align:right}
+  table.cartes td::before{content:attr(data-l);color:var(--gris);font-size:13px;text-align:left;flex:0 0 auto}
+  table.cartes td:first-child{text-align:left;font-weight:500;padding-bottom:8px}
+  table.cartes td:first-child::before{content:none}
+  /* barre d'action collante pour les formulaires longs */
+  .collant{position:sticky;bottom:64px;background:var(--creme);padding:10px 0;
+    border-top:1px solid var(--trait);z-index:10}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
-
-/* ------- barre d'espace de travail ------- */
-.barre{background:var(--papier);border-bottom:1px solid var(--trait)}
-.barre-in{max-width:1180px;margin:0 auto;padding:10px 24px;display:flex;gap:12px;
-  flex-wrap:wrap;justify-content:space-between;align-items:center}
-#nomEspace{font-weight:500}
-
-/* ------- aides à la cotation ------- */
-details.ancres{margin-top:10px}
-details.ancres summary{cursor:pointer;color:var(--violet);font-size:13px;list-style:none}
-details.ancres summary::-webkit-details-marker{display:none}
-details.ancres summary::before{content:"Ancres ";position:absolute;left:-9999px}
-details.ancres summary::after{content:" ▾"}
-details.ancres[open] summary::after{content:" ▴"}
-details.ancres table{margin-top:6px;background:#FAF6EE;border:1px solid var(--trait);border-radius:var(--r);font-size:13px}
-details.ancres td{padding:5px 9px;border-bottom:1px solid #EFE9DE}
-details.ancres tr:last-child td{border-bottom:0}
-details.ancres tr.active{background:var(--lime-pale)}
-td.niv{width:34px;text-align:center;color:var(--gris);font-variant-numeric:tabular-nums;vertical-align:top}
-details.rappel{margin-bottom:16px}
-details.rappel summary{cursor:pointer;font-weight:500}
-details.rappel table{font-size:13px}
-details.rappel td{padding:5px 8px}
-input[type=file]{font-size:13px;border:1px dashed var(--trait);padding:8px;border-radius:var(--r);background:var(--papier);width:auto}
-ol{line-height:1.5}
-
-/* ------- impression ------- */
+/* ================= impression ================= */
 @media print{
-  header.top,.bandeau,.barre,.tabs,footer{display:none!important}
+  header.app,nav.rail,nav.bas,.onglets,.suite,footer.pied{display:none!important}
   button{display:none!important}
   body{background:#fff;font-size:11pt}
-  .wrap{max-width:none;padding:0}
-  .carte,.kpi{border-color:#bbb;break-inside:avoid;page-break-inside:avoid}
-  .sect{break-inside:auto}
+  .coque{display:block;max-width:none;padding:0}
+  .carte,.stat,.heros{border-color:#bbb;break-inside:avoid;page-break-inside:avoid}
   input,select,textarea{border:0!important;padding:0!important;background:transparent!important;
-    -webkit-appearance:none;appearance:none;color:#000}
-  label.champ{color:#555}
+    -webkit-appearance:none;appearance:none;color:#000;min-height:0}
+  details.avance{display:none}
   .p{border:1px solid #999}
 }

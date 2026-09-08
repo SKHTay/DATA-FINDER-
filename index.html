@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Moteur unifié de recensement et de qualification des gisements</title>
-<meta name="description" content="Démonstrateur du moteur de recensement et de qualification des gisements de données sanitaires et médico-sociales. Données fictives, aucun contenu patient.">
+<title>Data Finder</title>
+<meta name="description" content="Recensez vos actifs de données, identifiez de nouveaux usages et décidez où agir en priorité.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="light">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -12,34 +12,39 @@
 </head>
 <body>
 
-<header class="top">
-  <div class="top-in">
-    <div class="marque">Moteur unifié <span>de recensement et de qualification des gisements de données</span></div>
-    <div class="ver">Réf. V1.2.2, procédure EDR V1.0, MPD V1.1.5</div>
+<header class="app">
+  <div class="app-in">
+    <div class="marque">
+      <svg width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="4" y="19" width="5" height="8" rx="1" fill="#5C3EC2"/>
+        <rect x="13.5" y="13" width="5" height="14" rx="1" fill="#4EC9B0"/>
+        <rect x="23" y="5" width="5" height="22" rx="1" fill="#B8E04A"/>
+      </svg>
+      Data Finder
+    </div>
+    <div class="droite" id="enTeteDroite"></div>
   </div>
-  <nav class="spine" id="nav" aria-label="Étapes de la chaîne" hidden></nav>
 </header>
 
-<div class="barre" id="barre" hidden></div>
+<div class="coque">
+  <nav class="rail" id="rail" aria-label="Navigation principale" hidden></nav>
+  <main id="app">
+    <noscript><p style="margin-top:32px">Data Finder effectue ses calculs dans le navigateur.
+      Activez JavaScript pour l'utiliser.</p></noscript>
+  </main>
+</div>
 
-<div class="bandeau" hidden><div id="bandeau"></div></div>
+<nav class="bas" id="railBas" aria-label="Navigation principale" hidden></nav>
 
-<main class="wrap" id="app">
-  <noscript>
-    <p style="margin-top:32px">Ce démonstrateur exécute ses calculs dans le navigateur.
-    Activez JavaScript pour l'utiliser.</p>
-  </noscript>
-</main>
-
-<footer class="wrap">
-  Ce prototype fonctionne hors ligne et sans serveur. Votre travail est enregistré dans ce navigateur, sur ce poste, et n'est jamais transmis.
-  Les données de démonstration sont fictives : aucun contenu patient, aucune donnée réelle d'établissement.
-  Les poids, seuils et formules reproduisent le référentiel V1.2.2 et la spécification fonctionnelle V1.2.2.
-  Ils restent des hypothèses à calibrer sur les pilotes.
-</footer>
+<footer class="pied"><div>
+  Data Finder fonctionne sans serveur. Votre travail est enregistré dans ce navigateur, sur ce poste,
+  et n'est jamais transmis. Les données fournies en exemple sont fictives : aucun contenu patient,
+  aucune donnée réelle d'établissement.
+</div></footer>
 
 <script src="moteur.js"></script>
 <script src="ancres.js"></script>
+<script src="libelles.js"></script>
 <script src="cas.js"></script>
 <script src="persistance.js"></script>
 <script src="interface.js"></script>
