@@ -33,7 +33,7 @@ ni la validation clinique. Chaque poste est isolé, rien n'est partagé entre pa
 ## Langage produit
 
 Le vocabulaire méthodologique ne pilote plus la navigation. Il reste accessible dans
-M�thode et traçabilité, dans les exports et dans les sections avancées de chaque écran.
+Méthode et traçabilité, dans les exports et dans les sections avancées de chaque écran.
 
 | Terme méthodologique | Terme affiché |
 |---|---|
